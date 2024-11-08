@@ -49,7 +49,7 @@ func ReadCJPMConfig(p string) (CJPMConfig, error) {
 	return config, nil
 }
 
-func (c CJPMConfig) WriteConfigToDir(p string) error {
+func (c *CJPMConfig) WriteConfigToDir(p string) error {
 	buf := bytes.NewBuffer([]byte{})
 
 	err := toml.NewEncoder(buf).Encode(&c) // 将对象编码为TOML
@@ -74,14 +74,21 @@ func (c CJPMConfig) WriteConfigToDir(p string) error {
 
 // WriteToConfig 将配置写人文件
 // 当传入目录时，自动添加文件名
-func (c CJPMConfig) WriteToConfig(p string) error {
+func (c *CJPMConfig) WriteToConfig(p string) error {
 	return c.WriteConfigToDir(p)
 }
 
-func (c CJPMConfig) GenerateFromPackageConfig(config t.PackageConfig) {
-	//return nil
+func (c *CJPMConfig) GenerateFromPackageConfig(config t.PackageConfig) {
+	c.Package.Name = config.Base.Name
+	c.Package.Version = config.Base.Version
+	c.Package.ComVer = config.Base.ComVer
+	c.Package.Description = config.Base.Description
+	c.Package.ScrPath = config.Base.ScrPath
+	c.Package.TargetPath = config.Base.TargetPath
+	c.Package.OutputType = config.Base.OutputType
+	c.Package.CompilerOption = config.Base.CompilerOption
 }
-func (c CJPMConfig) GenerateFromProjectConfig(config t.PackageConfig) {
+func (c *CJPMConfig) GenerateFromProjectConfig(config t.PackageConfig) {
 	c.GenerateFromPackageConfig(config)
 }
 

@@ -11,7 +11,7 @@ import (
 
 type SDKInfo struct {
 	Ver  Version `xml:"ver"`
-	Path string  `xml:"path"`
+	Path string  `xml:"path,attr"`
 	Note string  `xml:"note"`
 }
 

@@ -31,6 +31,7 @@ var NewCommand = &cobra.Command{
 		iC = project.InitGuide(iC) // 启用TUI引导
 		c := t.NewPackageConfig()
 		c.GenerateFromInitConfig(&iC, cjpmPackage.NewCJPMConfig())
+		log.Info(c.Base)
 		s, err := os.Stat(args[0]) // 判断是否存在同名文件
 		if err == nil {
 			if !s.IsDir() {
@@ -62,6 +63,7 @@ var NewCommand = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 
+		log.Debug(c.Base)
 		if err := c.WriteToDisk(); err != nil {
 			log.Fatal(err.Error())
 		}

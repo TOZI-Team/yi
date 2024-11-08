@@ -17,6 +17,7 @@ type InitConfig struct {
 	Description string
 	ComVer      string
 	SDK         *SDKInfo
+	Output      OutputType
 }
 
 //func (i InitConfig) ToCJPMConfig() cjpmPackage.CJPMConfig {
@@ -53,7 +54,7 @@ type PackageConfig struct {
 	backend BackendProjectConfig
 }
 
-func (c PackageConfig) LoadFromDir(p string) error {
+func (c *PackageConfig) LoadFromDir(p string) error {
 	// 加载 project.yml
 	yamlFile, err := os.ReadFile(path.Join(p, "./project.yml"))
 	if err != nil {
@@ -76,7 +77,7 @@ func (c PackageConfig) LoadFromDir(p string) error {
 	return nil
 }
 
-func (c PackageConfig) GenerateFromInitConfig(config *InitConfig, backend BackendProjectConfig) {
+func (c *PackageConfig) GenerateFromInitConfig(config *InitConfig, backend BackendProjectConfig) {
 	c.Base.path = config.Path
 	//c.backend = backend
 	c.Base.Name = config.Name
@@ -85,16 +86,16 @@ func (c PackageConfig) GenerateFromInitConfig(config *InitConfig, backend Backen
 	c.Base.Authors = []string{config.Authors}
 	c.Base.Version = config.Version
 	c.cache.CompilerSet = *config.SDK
-
+	c.Base.OutputType = config.Output
 	c.SetBackend(backend)
 	log.Info(c.Base)
 }
 
-func (c PackageConfig) SetBackend(config BackendProjectConfig) {
+func (c *PackageConfig) SetBackend(config BackendProjectConfig) {
 	c.backend = config
 }
 
-func (c PackageConfig) WriteToDisk() error {
+func (c *PackageConfig) WriteToDisk() error {
 	log.Info(c.Base)
 	data, err := yaml.Marshal(c.Base) // 写入 project.yml
 	if err != nil {
@@ -106,7 +107,7 @@ func (c PackageConfig) WriteToDisk() error {
 		return err
 	}
 
-	data, err = xml.Marshal(c.cache) // 写入 project.lock
+	data, err = xml.MarshalIndent(c.cache, " ", "   ") // 写入 project.lock
 	if err != nil {
 		return err
 	}
@@ -114,16 +115,23 @@ func (c PackageConfig) WriteToDisk() error {
 	if err != nil {
 		return err
 	}
+
+	c.SyncToBackendConfig()
+	err = c.backend.WriteConfigToDir(c.Base.path)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (c PackageConfig) SyncToBackendConfig() {
-	c.backend.GenerateFromProjectConfig(c)
+func (c *PackageConfig) SyncToBackendConfig() {
+	c.backend.GenerateFromProjectConfig(*c)
 }
 
 // CheckCache 检查项目缓存是否有效
 // 当缓存中的编译器无效时
-func (c PackageConfig) CheckCache() error {
+func (c *PackageConfig) CheckCache() error {
 	if !c.cache.CompilerSet.CheckIsHave() {
 		return yError.NewNotFoundSDKErr(c.cache.CompilerSet.Path)
 	}
@@ -158,16 +166,16 @@ type BuildOptions struct {
 	backendOpt  BackendBuildOptions
 }
 
-func (opts BuildOptions) SyncToBackendOpt() error {
+func (opts *BuildOptions) SyncToBackendOpt() error {
 	if opts.backendOpt == nil {
 		return yError.NewNoBackendError("Not found build backend")
 	}
-	opts.backendOpt.RewriteFromBuildOptions(&opts)
+	opts.backendOpt.RewriteFromBuildOptions(opts)
 	return nil
 }
 
 // MakeBackendShellArgs 获取编译后端对应command
-func (opts BuildOptions) MakeBackendShellArgs() ([]string, error) {
+func (opts *BuildOptions) MakeBackendShellArgs() ([]string, error) {
 	err := opts.SyncToBackendOpt()
 	if err != nil {
 		return nil, err
@@ -179,12 +187,12 @@ func NewBuildOptions() *BuildOptions {
 	return &BuildOptions{}
 }
 
-func (opts BuildOptions) SetBackend(options BackendBuildOptions) {
+func (opts *BuildOptions) SetBackend(options BackendBuildOptions) {
 	opts.backendOpt = options
 }
 
 // SetBackendOptions 设置编译后端配置
-func (opts BuildOptions) SetBackendOptions(bOptions BackendBuildOptions) error {
+func (opts *BuildOptions) SetBackendOptions(bOptions BackendBuildOptions) error {
 	opts.backendOpt = bOptions
 	err := opts.SyncToBackendOpt()
 	if err != nil {
@@ -194,7 +202,7 @@ func (opts BuildOptions) SetBackendOptions(bOptions BackendBuildOptions) error {
 }
 
 // GetBackendOptions 获取编译后端配置
-func (opts BuildOptions) GetBackendOptions() *BackendBuildOptions {
+func (opts *BuildOptions) GetBackendOptions() *BackendBuildOptions {
 	err := opts.SyncToBackendOpt()
 	if err != nil {
 		return nil
@@ -203,6 +211,6 @@ func (opts BuildOptions) GetBackendOptions() *BackendBuildOptions {
 }
 
 // GetOutputPath 获取后端构建产物的相对位置
-func (opts BuildOptions) GetOutputPath() string {
+func (opts *BuildOptions) GetOutputPath() string {
 	return opts.backendOpt.GetOutputPath()
 }

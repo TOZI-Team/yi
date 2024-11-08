@@ -51,6 +51,7 @@ func InitGuide(c t.InitConfig) t.InitConfig {
 	s := new(t.SDKInfo)
 	*(s) = com
 	c.SDK = s
+	c.Output = t.EXECUTABLE
 	log.Infof("Set compiler vsrsion: %s", c.ComVer)
 
 	// 初始化
