@@ -2,6 +2,7 @@ package project
 
 import (
 	"Yi/internal/sdk"
+	cjpmPackage "Yi/pkg/backend/cjpm/package"
 	t "Yi/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -33,7 +34,9 @@ var BuildCommand = &cobra.Command{
 
 func init() {
 	buildOptions = t.NewBuildOptions()
-	//cjpmBuildOptions = cjpmPackage.NewCJPMBuildOptions()
+
+	cjpmBuildOptions := cjpmPackage.NewCJPMBuildOptions()
+	buildOptions.SetBackend(cjpmBuildOptions)
 
 	BuildCommand.Flags().BoolVarP(&buildOptions.IsRelease, "release", "r", false, "Build a release")
 }

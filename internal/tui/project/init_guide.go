@@ -48,6 +48,9 @@ func InitGuide(c t.InitConfig) t.InitConfig {
 
 	com := compiler.ChooseCompiler(sdk.GlobalSDKManger.GetSDKs())
 	c.ComVer = com.Ver
+	s := new(t.SDKInfo)
+	*(s) = com
+	c.SDK = s
 	log.Infof("Set compiler vsrsion: %s", c.ComVer)
 
 	// 初始化

@@ -8,9 +8,9 @@ import (
 	"path"
 )
 
-type CJPMPackageConfig struct {
+type PackageConfig struct {
 	ComVer         string       `toml:"cjc-version"`
-	CompilarOption string       `toml:"compiler-option"`
+	CompilerOption string       `toml:"compiler-option"`
 	Description    string       `toml:"description"`
 	Name           string       `toml:"name"`
 	Version        string       `toml:"version"`
@@ -27,10 +27,11 @@ type CJPMDepend struct {
 }
 
 type CJPMConfig struct {
-	Package CJPMPackageConfig     `toml:"package"`
+	Package PackageConfig         `toml:"package"`
 	Depends map[string]CJPMDepend `toml:"depends"`
 }
 
+// Deprecated: Use t.ProjectConfig
 func ReadCJPMConfig(p string) (CJPMConfig, error) {
 	s, err := os.Stat(p)
 	if err != nil {
@@ -48,9 +49,7 @@ func ReadCJPMConfig(p string) (CJPMConfig, error) {
 	return config, nil
 }
 
-// WriteToConfig 将配置写人文件
-// 当传入目录时，自动添加文件名
-func (c CJPMConfig) WriteToConfig(p string) error {
+func (c CJPMConfig) WriteConfigToDir(p string) error {
 	buf := bytes.NewBuffer([]byte{})
 
 	err := toml.NewEncoder(buf).Encode(&c) // 将对象编码为TOML
@@ -71,4 +70,21 @@ func (c CJPMConfig) WriteToConfig(p string) error {
 		return err
 	}
 	return nil
+}
+
+// WriteToConfig 将配置写人文件
+// 当传入目录时，自动添加文件名
+func (c CJPMConfig) WriteToConfig(p string) error {
+	return c.WriteConfigToDir(p)
+}
+
+func (c CJPMConfig) GenerateFromPackageConfig(config t.PackageConfig) {
+	//return nil
+}
+func (c CJPMConfig) GenerateFromProjectConfig(config t.PackageConfig) {
+	c.GenerateFromPackageConfig(config)
+}
+
+func NewCJPMConfig() *CJPMConfig {
+	return &CJPMConfig{Package: PackageConfig{OutputType: t.EXECUTABLE}}
 }
