@@ -10,9 +10,9 @@ import (
 )
 
 type SDKInfo struct {
-	Ver  Version
-	Path string
-	Note string
+	Ver  Version `xml:"ver"`
+	Path string  `xml:"path,attr"`
+	Note string  `xml:"note"`
 }
 
 type SDKRunOptions struct {
@@ -23,7 +23,7 @@ type SDKRunOptions struct {
 
 // CheckIsHave 检查是否真实存在
 func (i SDKInfo) CheckIsHave() bool {
-	if path.IsAbs(i.Path) && path.IsAbs(path.Join(i.Path, "bin/cjc")) && path.IsAbs(path.Join(i.Path, "tools/bin/")) {
+	if path.IsAbs(i.Path) && path.IsAbs(path.Join(i.Path, "bin/")) && path.IsAbs(path.Join(i.Path, "tools/bin/")) {
 		return true
 	}
 	return false
@@ -44,10 +44,13 @@ func (i SDKInfo) RunCommand(command []string, p string) error {
 	return nil
 }
 
-// 构建项目
+// BuildProject 构建项目
 func (i SDKInfo) BuildProject(p string, options BuildOptions) (string, error) {
-	command := options.MakeBackendShellArgs()
-	err := i.RunCommand(command, p)
+	command, err := options.MakeBackendShellArgs()
+	if err != nil {
+		return "", err
+	}
+	err = i.RunCommand(command, p)
 	if err != nil {
 		return "", err
 	}

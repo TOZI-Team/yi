@@ -23,7 +23,7 @@ func NewCJPMBuildOptions() *CJPMBuildOptions {
 	return &CJPMBuildOptions{}
 }
 
-func (opt CJPMBuildOptions) ToShellArgs() []string {
+func (opt *CJPMBuildOptions) ToShellArgs() []string {
 	args := []string{"cjpm", "build"}
 	if opt.EnableIncremental {
 		args = append(args, "--incremental")
@@ -53,7 +53,7 @@ func (opt CJPMBuildOptions) ToShellArgs() []string {
 	return args
 }
 
-func (opt CJPMBuildOptions) GetOutputPath() string {
+func (opt *CJPMBuildOptions) GetOutputPath() string {
 	if opt.EnableDebugTarget {
 		return "target/release/bin/main"
 	} else {
@@ -64,7 +64,7 @@ func (opt CJPMBuildOptions) GetOutputPath() string {
 // RewriteFromBuildOptions
 //
 //	@Description: 从 BuildOptions 覆写配置
-func (opt CJPMBuildOptions) RewriteFromBuildOptions(options *t.BuildOptions) {
+func (opt *CJPMBuildOptions) RewriteFromBuildOptions(options *t.BuildOptions) {
 	if options.IsRelease {
 		opt.EnableDebugTarget = false
 	} else {

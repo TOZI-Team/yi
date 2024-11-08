@@ -2,6 +2,7 @@ package project
 
 import (
 	"Yi/internal/tui/project"
+	cjpmPackage "Yi/pkg/backend/cjpm/package"
 	t "Yi/pkg/types"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -21,8 +22,16 @@ var NewCommand = &cobra.Command{
 			log.Warningf("将清空文件夹：%s", args[0])
 		}
 
-		c := project.InitGuide(t.DefaultConfig).ToCJPMConfig() // 启用TUI引导
-
+		iC := t.DefaultInitConfig
+		//wd, err := os.Getwd()
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+		iC.Path = args[0]
+		iC = project.InitGuide(iC) // 启用TUI引导
+		c := t.NewPackageConfig()
+		c.GenerateFromInitConfig(&iC, cjpmPackage.NewCJPMConfig())
+		log.Info(c.Base)
 		s, err := os.Stat(args[0]) // 判断是否存在同名文件
 		if err == nil {
 			if !s.IsDir() {
@@ -50,11 +59,12 @@ var NewCommand = &cobra.Command{
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		if err := os.WriteFile(path.Join(args[0], "./src/demo.cj"), []byte(fmt.Sprintf("package %s\n\n// You can write Cangjie code here.\n", c.Package.Name)), os.ModePerm); err != nil {
+		if err := os.WriteFile(path.Join(args[0], "./src/demo.cj"), []byte(fmt.Sprintf("package %s\n\n// You can write Cangjie code here.\n", c.Base.Name)), os.ModePerm); err != nil {
 			log.Fatal(err.Error())
 		}
 
-		if err := c.WriteToConfig(args[0]); err != nil {
+		log.Debug(c.Base)
+		if err := c.WriteToDisk(); err != nil {
 			log.Fatal(err.Error())
 		}
 		log.Info("创建项目成功")

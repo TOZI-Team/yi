@@ -23,11 +23,11 @@ func (m WaitingModel) Init() tea.Cmd {
 
 func (m WaitingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if len(m.statueC) == 1 {
-		tsatue := <-m.statueC
-		if tsatue.Message != "" {
-			m.statue.Message = tsatue.Message
+		tStatue := <-m.statueC
+		if tStatue.Message != "" {
+			m.statue.Message = tStatue.Message
 		}
-		m.statue.Statue = tsatue.Statue
+		m.statue.Statue = tStatue.Statue
 	}
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
