@@ -43,7 +43,15 @@ func (m WaitingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	default:
 		var cmd tea.Cmd
 		m.spinner, cmd = m.spinner.Update(msg)
-		return m, cmd
+
+		switch m.statue.Statue {
+		case t.Success:
+			return m, tea.Batch(cmd, tea.Quit)
+		case t.Err:
+			return m, tea.Batch(cmd, tea.Quit)
+		default:
+			return m, cmd
+		}
 	}
 
 }
@@ -68,11 +76,11 @@ func (m WaitingModel) View() string {
 	return str
 }
 
-func NewWaitingModel(text string, c chan t.WaitingMessage) WaitingModel {
+func NewWaitingModel(text string, c chan t.WaitingMessage) *WaitingModel {
 	s := spinner.New()
 	s.Spinner = spinner.Line
 	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-	return WaitingModel{
+	return &WaitingModel{
 		spinner: s,
 		statue: t.WaitingMessage{
 			Message: text,

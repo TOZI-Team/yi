@@ -58,14 +58,11 @@ func (c *CJPMConfig) WriteConfigToDir(p string) error {
 	}
 
 	s, err := os.Stat(p) // 如果传参为目录，则自动添加文件名
-	if err != nil {
-		return err
-	}
-	if s.IsDir() {
+	if err == nil && s.IsDir() {
 		p = path.Join(p, "./cjpm.toml")
 	}
 
-	err = os.WriteFile(p, buf.Bytes(), 0666)
+	err = os.WriteFile(p, buf.Bytes(), 0666) //写入文件
 	if err != nil {
 		return err
 	}

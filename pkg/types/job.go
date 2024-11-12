@@ -12,3 +12,19 @@ type WaitingMessage struct {
 	Statue  JobStatue
 	Message string
 }
+
+type Job struct {
+	Name string
+	f    func() error
+}
+
+func (j Job) Run() error {
+	return j.f()
+}
+
+func NewJob(name string, f func() error) *Job {
+	return &Job{
+		Name: name,
+		f:    f,
+	}
+}

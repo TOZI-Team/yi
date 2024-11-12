@@ -6,13 +6,16 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"strings"
 )
 
+var versionMatch = regexp.MustCompile("[0-9]+\\.[0-9]+\\.[0-9]+")
+
 type SDKInfo struct {
-	Ver  Version `xml:"ver"`
-	Path string  `xml:"path,attr"`
-	Note string  `xml:"note"`
+	Ver  Version `xml:"version" yaml:"Version" json:"version"`
+	Path string  `xml:"path,attr" yaml:"Path" json:"path"`
+	Note string  `xml:"note" yaml:"Note" json:"note"`
 }
 
 type SDKRunOptions struct {
@@ -23,6 +26,7 @@ type SDKRunOptions struct {
 
 // CheckIsHave 检查是否真实存在
 func (i SDKInfo) CheckIsHave() bool {
+	// TODO fix
 	if path.IsAbs(i.Path) && path.IsAbs(path.Join(i.Path, "bin/")) && path.IsAbs(path.Join(i.Path, "tools/bin/")) {
 		return true
 	}
@@ -61,7 +65,13 @@ func (i SDKInfo) GetActivityEnvScript() []string {
 	return []string{"source", fmt.Sprintf("\"%s\"", path.Join(i.Path, "./envsetup.sh"))}
 }
 
-func NewSDKInfo(path string) *SDKInfo {
-	// TODO 根据 path 获取版本
-	return &SDKInfo{Path: path, Ver: "0.53.13"}
+func NewSDKInfo(p string) (*SDKInfo, error) {
+	c := exec.Command(path.Join(p, "./bin/cjc"), "-v")
+	output, err := c.Output()
+	log.Debugf("Cjc version output: \n===\n%s\n===", string(output))
+	if err != nil {
+		return nil, err
+	}
+	output = versionMatch.Find(output)
+	return &SDKInfo{Path: p, Ver: Version(output)}, nil
 }
