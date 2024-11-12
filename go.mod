@@ -3,24 +3,29 @@ module Yi
 go 1.23.2
 
 require (
-	github.com/BurntSushi/toml v0.3.1
+	github.com/BurntSushi/toml v1.4.0
 	github.com/charmbracelet/bubbles v0.20.0
-	github.com/charmbracelet/bubbletea v1.1.2
+	github.com/charmbracelet/bubbletea v1.2.1
 	github.com/charmbracelet/lipgloss v1.0.0
 	github.com/erikgeiser/promptkit v0.9.0
+	github.com/kirsle/configdir v0.0.0-20170128060238-e45d2f54772f
 	github.com/ostafen/clover v1.2.0
+	github.com/scylladb/termtables v1.0.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
+	github.com/walle/targz v0.0.0-20140417120357-57fe4206da5a
 	golang.org/x/mod v0.21.0
+	golang.org/x/sys v0.26.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
+	github.com/apcera/termtables v0.0.0-20170405184538-bcbc5dc54055 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/charmbracelet/x/ansi v0.4.2 // indirect
+	github.com/charmbracelet/x/ansi v0.4.5 // indirect
 	github.com/charmbracelet/x/term v0.2.0 // indirect
 	github.com/dgraph-io/badger/v3 v3.2103.2 // indirect
 	github.com/dgraph-io/ristretto v0.1.0 // indirect
@@ -49,6 +54,5 @@ require (
 	go.opencensus.io v0.22.5 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 )

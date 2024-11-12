@@ -7,6 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 type InitConfig struct {
@@ -55,6 +56,13 @@ type PackageConfig struct {
 }
 
 func (c *PackageConfig) LoadFromDir(p string) error {
+	// 设置 path
+	absPath, err := filepath.Abs(p)
+	if err != nil {
+		return err
+	}
+	c.Base.path = absPath
+
 	// 加载 project.yml
 	yamlFile, err := os.ReadFile(path.Join(p, "./project.yml"))
 	if err != nil {
@@ -66,7 +74,7 @@ func (c *PackageConfig) LoadFromDir(p string) error {
 	}
 
 	// 加载 project.lock
-	xmlFile, err := os.ReadFile(path.Join(p, "./package.lock"))
+	xmlFile, err := os.ReadFile(path.Join(p, "./project.lock"))
 	if err != nil {
 		return err
 	}
@@ -99,25 +107,29 @@ func (c *PackageConfig) WriteToDisk() error {
 	log.Info(c.Base)
 	data, err := yaml.Marshal(c.Base) // 写入 project.yml
 	if err != nil {
+		log.Warn(err.Error())
 		return err
 	}
 	log.Info("项目配置写入： ", c.Base.path)
 	err = os.WriteFile(path.Join(c.Base.path, "./project.yml"), data, 0644)
 	if err != nil {
+		log.Warn(err.Error())
 		return err
 	}
 
 	data, err = xml.MarshalIndent(c.cache, " ", "   ") // 写入 project.lock
 	if err != nil {
+		log.Warn(err.Error())
 		return err
 	}
-	err = os.WriteFile(path.Join(c.Base.path, "project.lock"), data, 0644)
+	err = os.WriteFile(path.Join(c.Base.path, "./project.lock"), data, 0644)
 	if err != nil {
+		log.Warn(err.Error())
 		return err
 	}
 
 	c.SyncToBackendConfig()
-	err = c.backend.WriteConfigToDir(c.Base.path)
+	err = c.WriteBackendConfigToDisk()
 	if err != nil {
 		return err
 	}
@@ -136,6 +148,31 @@ func (c *PackageConfig) CheckCache() error {
 		return yError.NewNotFoundSDKErr(c.cache.CompilerSet.Path)
 	}
 	return nil
+}
+
+func (c *PackageConfig) WriteBackendConfigToDisk() error {
+	err := c.backend.WriteConfigToDir(c.Base.path)
+	if err != nil {
+		log.Warn(err.Error())
+		return err
+	}
+	return nil
+}
+
+func (c *PackageConfig) ResetCache(p string) error {
+	sdk, err := NewSDKInfo(p)
+	if err != nil {
+		return err
+	}
+	if sdk.Ver != c.Base.ComVer {
+		log.Warn("编译器版本与项目设置不匹配。")
+	}
+	c.cache.CompilerSet = *sdk
+	return nil
+}
+
+func (c *PackageConfig) GetCacheSDK() *SDKInfo {
+	return &c.cache.CompilerSet
 }
 
 func NewPackageConfig() *PackageConfig {
@@ -161,9 +198,10 @@ var DefaultInitConfig = InitConfig{
 }
 
 type BuildOptions struct {
-	ProjectPath string
-	IsRelease   bool
-	backendOpt  BackendBuildOptions
+	ProjectPath   string
+	IsRelease     bool
+	RunAfterBuild bool
+	backendOpt    BackendBuildOptions
 }
 
 func (opts *BuildOptions) SyncToBackendOpt() error {

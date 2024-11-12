@@ -14,5 +14,11 @@ type BackendBuildOptions interface {
 type BackendProjectConfig interface {
 	GenerateFromProjectConfig(config PackageConfig)
 	GenerateFromPackageConfig(config PackageConfig)
+	//
+	// WriteConfigToDir
+	//  @Description: 将后端设置写入磁盘。
+	//  @param string 文件夹路径
+	//  @return error
+	//
 	WriteConfigToDir(string) error
 }
