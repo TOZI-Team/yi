@@ -1,6 +1,7 @@
 package project
 
 import (
+	"Yi/internal/sdk"
 	"Yi/internal/tui/project"
 	cjpmPackage "Yi/pkg/backend/cjpm/package"
 	t "Yi/pkg/types"
@@ -18,6 +19,10 @@ var NewCommand = &cobra.Command{
 	Short: "Creat new Cangjie Project",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		if sdk.GlobalSDKManger.Size() == 0 { // 如果SDK列表为空，则提示首先添加 SDK
+			log.Fatal("SDK manager is empty")
+		}
+
 		if isOverWrite {
 			log.Warningf("将清空文件夹：%s", args[0])
 		}
