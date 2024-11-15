@@ -65,6 +65,7 @@ func Execute() {
 	rootCmd.AddCommand(project.NewCommand)
 	rootCmd.AddCommand(project.BuildCommand)
 	rootCmd.AddCommand(sdkCmd.Command)
+	rootCmd.AddCommand(project.InitCmd)
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)

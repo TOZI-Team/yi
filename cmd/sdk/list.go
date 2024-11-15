@@ -12,8 +12,9 @@ var format string
 var online bool
 
 var listCommand = &cobra.Command{
-	Use:   "list",
-	Short: "List Sdks",
+	Use:     "list",
+	Aliases: []string{"ls", "l"},
+	Short:   "List Sdks",
 	Run: func(cmd *cobra.Command, args []string) {
 		if online {
 			log.Fatal("Sorry,not support the arg: --online")

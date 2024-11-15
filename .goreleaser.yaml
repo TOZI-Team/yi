@@ -5,7 +5,7 @@
 # Feel free to remove those if you don't want/need to use them.
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
-project_name: Yi
+project_name: yi
 
 version: 2
 
@@ -51,3 +51,21 @@ upx:
     # Compress argument.
     # Valid options are from '1' (faster) to '9' (better), and 'best'.
     compress: best
+
+nfpms:
+  - id: build
+    vendor: OCC
+    maintainer: yms_hi <yms_hi@outlook.com>
+    formats:
+      - apk
+      - deb
+      - rpm
+      - termux.deb
+      - archlinux
+    homepage: "https://www.open-cj.org"
+    description: |-
+      A manager for Cangjie project
+
+    license: LGPL3
+
+
