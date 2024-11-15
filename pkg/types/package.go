@@ -96,7 +96,7 @@ func (c *PackageConfig) GenerateFromInitConfig(config *InitConfig, backend Backe
 	c.cache.CompilerSet = *config.SDK
 	c.Base.OutputType = config.Output
 	c.SetBackend(backend)
-	log.Info(c.Base)
+	//log.Info(c.Base)
 }
 
 func (c *PackageConfig) SetBackend(config BackendProjectConfig) {
@@ -104,7 +104,7 @@ func (c *PackageConfig) SetBackend(config BackendProjectConfig) {
 }
 
 func (c *PackageConfig) WriteToDisk() error {
-	log.Info(c.Base)
+	//log.Info(c.Base)
 	data, err := yaml.Marshal(c.Base) // 写入 project.yml
 	if err != nil {
 		log.Warn(err.Error())

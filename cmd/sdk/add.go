@@ -7,8 +7,10 @@ import (
 )
 
 var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a compiler",
+	Use:     "add",
+	Aliases: []string{"a"},
+	Short:   "Add a compiler",
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		err := sdk.GlobalSDKManger.AddSDK(args[0])
 		if err != nil {

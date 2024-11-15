@@ -12,9 +12,10 @@ import (
 var isDeletable bool
 
 var removeCmd = &cobra.Command{
-	Use:   "remove",
-	Short: "Removes a SDK",
-	Args:  cobra.ExactArgs(1),
+	Use:     "remove",
+	Short:   "Removes a SDK",
+	Aliases: []string{"r"},
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		defer sdk.WriteGlobal()
 
