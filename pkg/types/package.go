@@ -1,13 +1,13 @@
 package types
 
 import (
-	yError "Yi/pkg/types/error"
 	"encoding/xml"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path"
 	"path/filepath"
+	yError "yi/pkg/types/error"
 )
 
 type InitConfig struct {

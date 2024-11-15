@@ -1,12 +1,12 @@
 package sdkCmd
 
 import (
-	"Yi/internal/sdk"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
 	"runtime"
+	"yi/internal/sdk"
 )
 
 var isDeletable bool

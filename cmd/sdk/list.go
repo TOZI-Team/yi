@@ -1,11 +1,11 @@
 package sdkCmd
 
 import (
-	"Yi/internal/sdk"
 	"encoding/json"
 	"github.com/scylladb/termtables"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"yi/internal/sdk"
 )
 
 var format string

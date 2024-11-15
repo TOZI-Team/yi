@@ -1,8 +1,6 @@
 package sdkCmd
 
 import (
-	"Yi/internal/sdk"
-	t "Yi/pkg/types"
 	"fmt"
 	"github.com/kirsle/configdir"
 	uuid "github.com/satori/go.uuid"
@@ -15,6 +13,8 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
+	"yi/internal/sdk"
+	t "yi/pkg/types"
 )
 
 func copyFolder(source string, destination string) error {

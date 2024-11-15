@@ -1,13 +1,13 @@
 package project
 
 import (
-	"Yi/internal/sdk"
-	cjpmPackage "Yi/pkg/backend/cjpm/package"
-	t "Yi/pkg/types"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
+	"yi/internal/sdk"
+	cjpmPackage "yi/pkg/backend/cjpm/package"
+	t "yi/pkg/types"
 )
 
 var InitCmd = &cobra.Command{

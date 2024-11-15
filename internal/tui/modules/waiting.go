@@ -1,11 +1,11 @@
 package modules
 
 import (
-	t "Yi/pkg/types"
 	"fmt"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	t "yi/pkg/types"
 )
 
 // WaitingModel 提供等待任务的TUI

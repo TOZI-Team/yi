@@ -1,13 +1,13 @@
 package sdk
 
 import (
-	t "Yi/pkg/types"
-	yError "Yi/pkg/types/error"
 	"github.com/kirsle/configdir"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path"
+	t "yi/pkg/types"
+	yError "yi/pkg/types/error"
 )
 
 type Manager struct {

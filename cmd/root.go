@@ -4,12 +4,12 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"Yi/cmd/project"
-	sdkCmd "Yi/cmd/sdk"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
+	"yi/cmd/project"
+	sdkCmd "yi/cmd/sdk"
 )
 
 // rootCmd represents the base command when called without any subcommands

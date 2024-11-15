@@ -1,9 +1,9 @@
 package tBox
 
 import (
-	"Yi/internal/tui/modules"
-	t "Yi/pkg/types"
 	tea "github.com/charmbracelet/bubbletea"
+	"yi/internal/tui/modules"
+	t "yi/pkg/types"
 )
 
 type BaseWaitingBox struct {

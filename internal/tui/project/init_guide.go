@@ -1,13 +1,13 @@
 package project
 
 import (
-	"Yi/internal/sdk"
-	"Yi/internal/tui/box/compiler"
-	cjpackage "Yi/pkg/package"
-	t "Yi/pkg/types"
 	"fmt"
 	"github.com/erikgeiser/promptkit/textinput"
 	log "github.com/sirupsen/logrus"
+	"yi/internal/sdk"
+	"yi/internal/tui/box/compiler"
+	cjpackage "yi/pkg/package"
+	t "yi/pkg/types"
 )
 
 func InitGuide(c t.InitConfig) t.InitConfig {

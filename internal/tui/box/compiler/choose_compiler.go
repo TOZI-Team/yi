@@ -1,14 +1,14 @@
 package compiler
 
 import (
-	"Yi/internal/tui/modules"
-	t "Yi/pkg/types"
 	"fmt"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"yi/internal/tui/modules"
+	t "yi/pkg/types"
 )
 
 func ChooseCompiler(sdks *[]t.SDKInfo) t.SDKInfo {

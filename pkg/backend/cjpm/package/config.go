@@ -1,11 +1,11 @@
 package cjpmPackage
 
 import (
-	t "Yi/pkg/types"
 	"bytes"
 	"github.com/BurntSushi/toml"
 	"os"
 	"path"
+	t "yi/pkg/types"
 )
 
 type PackageConfig struct {

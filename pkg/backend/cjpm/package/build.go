@@ -1,8 +1,8 @@
 package cjpmPackage
 
 import (
-	t "Yi/pkg/types"
 	"strconv"
+	t "yi/pkg/types"
 )
 
 type CJPMBuildOptions struct {

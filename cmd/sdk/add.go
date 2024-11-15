@@ -1,9 +1,9 @@
 package sdkCmd
 
 import (
-	"Yi/internal/sdk"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"yi/internal/sdk"
 )
 
 var addCmd = &cobra.Command{

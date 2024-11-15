@@ -1,4 +1,4 @@
-module Yi
+module yi
 
 go 1.23.2
 

@@ -1,15 +1,15 @@
 package project
 
 import (
-	"Yi/internal/sdk"
-	"Yi/internal/tui/project"
-	cjpmPackage "Yi/pkg/backend/cjpm/package"
-	t "Yi/pkg/types"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
+	"yi/internal/sdk"
+	"yi/internal/tui/project"
+	cjpmPackage "yi/pkg/backend/cjpm/package"
+	t "yi/pkg/types"
 )
 
 var isOverWrite bool
