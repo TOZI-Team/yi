@@ -21,6 +21,11 @@ type InitConfig struct {
 	Output      OutputType
 }
 
+const (
+	CacheFileName  = "project.lock"
+	ConfigFileName = "project.yml"
+)
+
 //func (i InitConfig) ToCJPMConfig() cjpmPackage.CJPMConfig {
 //	c := cjpmPackage.CJPMConfig{
 //		Package: cjpmPackage.PackageConfig{
@@ -64,7 +69,7 @@ func (c *PackageConfig) LoadFromDir(p string) error {
 	c.Base.path = absPath
 
 	// 加载 project.yml
-	yamlFile, err := os.ReadFile(path.Join(p, "./project.yml"))
+	yamlFile, err := os.ReadFile(path.Join(p, ConfigFileName))
 	if err != nil {
 		return err
 	}
@@ -74,7 +79,7 @@ func (c *PackageConfig) LoadFromDir(p string) error {
 	}
 
 	// 加载 project.lock
-	xmlFile, err := os.ReadFile(path.Join(p, "./project.lock"))
+	xmlFile, err := os.ReadFile(path.Join(p, CacheFileName))
 	if err != nil {
 		return err
 	}
@@ -111,7 +116,7 @@ func (c *PackageConfig) WriteToDisk() error {
 		return err
 	}
 	log.Info("项目配置写入： ", c.Base.path)
-	err = os.WriteFile(path.Join(c.Base.path, "./project.yml"), data, 0644)
+	err = os.WriteFile(path.Join(c.Base.path, ConfigFileName), data, 0644)
 	if err != nil {
 		log.Warn(err.Error())
 		return err
@@ -122,7 +127,7 @@ func (c *PackageConfig) WriteToDisk() error {
 		log.Warn(err.Error())
 		return err
 	}
-	err = os.WriteFile(path.Join(c.Base.path, "./project.lock"), data, 0644)
+	err = os.WriteFile(path.Join(c.Base.path, CacheFileName), data, 0644)
 	if err != nil {
 		log.Warn(err.Error())
 		return err
@@ -169,6 +174,23 @@ func (c *PackageConfig) ResetCache(p string) error {
 	}
 	c.cache.CompilerSet = *sdk
 	return nil
+}
+
+// IsProjectDir
+//
+//	@Description: 判断该目录是否为绎项目
+//	@param p
+//	@return bool
+func IsProjectDir(p string) bool {
+	s, err := os.Stat(path.Join(p, ConfigFileName))
+	if err != nil {
+		return false
+	}
+	if s.IsDir() {
+		return false
+	}
+
+	return true
 }
 
 func (c *PackageConfig) GetCacheSDK() *SDKInfo {

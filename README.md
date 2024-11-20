@@ -1,6 +1,7 @@
 # 绎
-![Static Badge](https://img.shields.io/badge/License-LGPL-orange?style=flat-square)
+![](https://img.shields.io/github/license/TOZI-Team/yi.svg)
 [![Static Badge](https://img.shields.io/badge/Prerelease-v0.1.0-purple?style=flat-square)]()
+[![build](https://github.com/TOZI-Team/yi/actions/workflows/build.yml/badge.svg)](https://github.com/TOZI-Team/yi/actions/workflows/build.yml)
 
 为仓颉编程语言打造的项目管理工具。
 

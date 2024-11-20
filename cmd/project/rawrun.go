@@ -4,18 +4,18 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
-	"strings"
 	"yi/internal/sdk"
 	t "yi/pkg/types"
 )
 
-var RunCommand = &cobra.Command{
-	Use:     "run",
-	Short:   "Run a command",
-	Aliases: []string{"r"},
-	Args:    cobra.ExactArgs(1),
+var RawRunCmd = &cobra.Command{
+	Use:                "rawrun",
+	Short:              "Run a command",
+	Aliases:            []string{"rr"},
+	Args:               cobra.MinimumNArgs(1),
+	DisableFlagParsing: true,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmds := strings.Split(args[0], " ")
+		log.SetLevel(log.PanicLevel)
 
 		wd, err := os.Getwd()
 		if err != nil {
@@ -29,7 +29,7 @@ var RunCommand = &cobra.Command{
 				log.Fatal(err)
 			}
 
-			err = pC.GetCacheSDK().RunCommand(cmds, wd)
+			err = pC.GetCacheSDK().RunCommand(args, wd)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -38,7 +38,7 @@ var RunCommand = &cobra.Command{
 				log.Fatal("未找到默认编译器")
 			}
 
-			err := (*sdk.GlobalSDKManger.GetSDKs())[0].RunCommand(cmds, wd)
+			err := (*sdk.GlobalSDKManger.GetSDKs())[0].RunCommand(args, wd)
 			if err != nil {
 				log.Fatal(err)
 			}

@@ -14,9 +14,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:     "Yi",
+	Use:     "yi",
 	Short:   "Cangjie package manager",
-	Version: "0.1.0-dev-snapshot",
+	Version: "0.2.0-alpha",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -64,8 +64,12 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.AddCommand(project.NewCommand)
 	rootCmd.AddCommand(project.BuildCommand)
-	rootCmd.AddCommand(sdkCmd.Command)
+	rootCmd.AddCommand(project.RunCommand)
 	rootCmd.AddCommand(project.InitCmd)
+	rootCmd.AddCommand(project.RawRunCmd)
+
+	rootCmd.AddCommand(sdkCmd.Command)
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)

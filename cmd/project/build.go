@@ -65,6 +65,14 @@ var BuildCommand = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 		log.Infof("Successfully build project successfully, output: %s", output)
+
+		if buildOptions.RunAfterBuild {
+			err = uSdk.RunCommand([]string{output}, wd)
+			if err != nil {
+				log.Error(err)
+				return
+			}
+		}
 	},
 }
 
