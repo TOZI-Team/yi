@@ -38,7 +38,7 @@ var RawRunCmd = &cobra.Command{
 				log.Fatal("未找到默认编译器")
 			}
 
-			err := (*sdk.GlobalSDKManger.GetSDKs())[0].RunCommand(args, wd)
+			err := sdk.GlobalSDKManger.GetDefault().RunCommand(args, wd)
 			if err != nil {
 				log.Fatal(err)
 			}

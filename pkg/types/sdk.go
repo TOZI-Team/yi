@@ -62,7 +62,8 @@ func (i SDKInfo) BuildProject(p string, options BuildOptions) (string, error) {
 }
 
 func (i SDKInfo) GetActivityEnvScript() []string {
-	return []string{"source", fmt.Sprintf("\"%s\"", path.Join(i.Path, "./envsetup.sh"))}
+	s := []string{"source", fmt.Sprintf("\"%s\"", path.Join(i.Path, "./envsetup.sh"))}
+	return s
 }
 
 func NewSDKInfo(p string) (*SDKInfo, error) {

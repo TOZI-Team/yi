@@ -21,6 +21,9 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
+    goarch:
+      - arm64
+      - amd64
 #      - windows
 #      - darwin
 
@@ -62,10 +65,12 @@ nfpms:
       - rpm
       - termux.deb
       - archlinux
-    homepage: "https://www.open-cj.org"
+    homepage: "https://yi.open-cj.org"
     description: |-
       A manager for Cangjie project
 
     license: LGPL3
-
-
+    contents:
+      - src: scripts/
+        dst: usr/bin/
+        type: tree

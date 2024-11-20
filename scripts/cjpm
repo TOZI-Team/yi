@@ -1,0 +1,1 @@
+yi run --log-level=disable -g "cjpm $*"

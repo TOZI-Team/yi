@@ -10,8 +10,11 @@ import (
 	yError "yi/pkg/types/error"
 )
 
+//var defaultMatch = regexp.MustCompile("\\[default]")
+
 type Manager struct {
-	Sdks []t.SDKInfo `yaml:"Sdks"`
+	Sdks    []t.SDKInfo `yaml:"Sdks"`
+	Default string      `yaml:"default"`
 }
 
 func NewSDKManager() *Manager {
@@ -92,6 +95,19 @@ func (m *Manager) FindByPath(p string) (int, error) {
 		}
 	}
 	return -1, yError.NewNotFoundSDKErr("Not find compiler what path is " + p)
+}
+
+func (m *Manager) GetDefault() *t.SDKInfo {
+	for _, sdk := range m.Sdks {
+		if m.Default == sdk.Path {
+			return &sdk
+		}
+	}
+	return &m.Sdks[0]
+}
+
+func (m *Manager) SetDefault(p string) {
+	m.Default = p
 }
 
 func (m *Manager) RemoveSDK(i int) {

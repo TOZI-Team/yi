@@ -9,6 +9,8 @@ import (
 	t "yi/pkg/types"
 )
 
+var global bool
+
 var RunCommand = &cobra.Command{
 	Use:     "run",
 	Short:   "Run a command",
@@ -22,7 +24,7 @@ var RunCommand = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		if t.IsProjectDir(wd) {
+		if (!global) && t.IsProjectDir(wd) {
 			pC := t.NewPackageConfig()
 			err = pC.LoadFromDir(wd)
 			if err != nil {
@@ -38,10 +40,14 @@ var RunCommand = &cobra.Command{
 				log.Fatal("未找到默认编译器")
 			}
 
-			err := (*sdk.GlobalSDKManger.GetSDKs())[0].RunCommand(cmds, wd)
+			err := sdk.GlobalSDKManger.GetDefault().RunCommand(cmds, wd)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
 	},
+}
+
+func init() {
+	RunCommand.Flags().BoolVarP(&global, "global", "g", false, "Use default SDK")
 }

@@ -7,16 +7,31 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"io"
 	"os"
 	"yi/cmd/project"
 	sdkCmd "yi/cmd/sdk"
 )
+
+var logLevel string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:     "yi",
 	Short:   "Cangjie package manager",
 	Version: "0.2.0-alpha",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if logLevel == "" {
+			return
+		} else if logLevel == "disable" {
+			log.SetOutput(io.Discard)
+		} else {
+			_, err := log.ParseLevel(logLevel)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	},
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -74,4 +89,8 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func init() {
+	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "", "Log level")
 }
