@@ -24,7 +24,7 @@ var InitCmd = &cobra.Command{
 			log.Warn("将覆盖当前配置")
 		}
 
-		_, err = os.Stat(path.Join(wd, "./project.yml"))
+		_, err = os.Stat(path.Join(wd, "./cjpm.toml"))
 		if os.IsNotExist(err) {
 
 		} else if err != nil {
@@ -39,9 +39,11 @@ var InitCmd = &cobra.Command{
 		iC.Name = path.Base(wd)
 		iC.ComVer = sdk.GlobalSDKManger.Sdks[0].Ver
 		iC.SDK = &sdk.GlobalSDKManger.Sdks[0]
+		iC.Output = t.EXECUTABLE
 
-		c := t.NewPackageConfig()
-		c.GenerateFromInitConfig(&iC, cjpmPackage.NewCJPMConfig())
+		c := t.NewPackageConfigV1()
+		c.SetBackend(cjpmPackage.NewCJPMConfigV1())
+		c.GenerateFromInitConfig(&iC)
 
 		if err := c.WriteToDisk(); err != nil {
 			log.Fatal(err.Error())

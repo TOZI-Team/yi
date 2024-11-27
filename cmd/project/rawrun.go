@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"yi/internal/sdk"
+	cjpmPackage "yi/pkg/backend/cjpm/package"
 	t "yi/pkg/types"
 )
 
@@ -23,7 +24,8 @@ var RawRunCmd = &cobra.Command{
 		}
 
 		if t.IsProjectDir(wd) {
-			pC := t.NewPackageConfig()
+			pC := t.NewPackageConfigV1()
+			pC.SetBackend(cjpmPackage.NewCJPMConfigV1())
 			err = pC.LoadFromDir(wd)
 			if err != nil {
 				log.Fatal(err)

@@ -19,7 +19,7 @@ var logLevel string
 var rootCmd = &cobra.Command{
 	Use:     "yi",
 	Short:   "Cangjie package manager",
-	Version: "0.2.0-alpha",
+	Version: "0.2.0-weekly.2",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if logLevel == "" {
 			return
@@ -93,4 +93,6 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "", "Log level")
+
+	//viper.SetDefault("compiler-path", "")
 }

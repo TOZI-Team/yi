@@ -35,8 +35,9 @@ var NewCommand = &cobra.Command{
 		iC.Path = args[0]
 		iC.Name = path.Base(args[0])
 		iC = project.InitGuide(iC) // 启用TUI引导
-		c := t.NewPackageConfig()
-		c.GenerateFromInitConfig(&iC, cjpmPackage.NewCJPMConfig())
+		c := t.NewPackageConfigV1()
+		c.GenerateFromInitConfig(&iC)
+		c.SetBackend(cjpmPackage.NewCJPMConfigV1())
 		//log.Info(c.Base)
 		s, err := os.Stat(args[0]) // 判断是否存在同名文件
 		if err == nil {
@@ -65,7 +66,7 @@ var NewCommand = &cobra.Command{
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		if err := os.WriteFile(path.Join(args[0], "./src/demo.cj"), []byte(fmt.Sprintf("package %s\n\n// You can write Cangjie code here.\n", c.Base.Name)), os.ModePerm); err != nil {
+		if err := os.WriteFile(path.Join(args[0], "./src/demo.cj"), []byte(fmt.Sprintf("package %s\n\n// You can write Cangjie code here.\n", c.Name)), os.ModePerm); err != nil {
 			log.Fatal(err.Error())
 		}
 

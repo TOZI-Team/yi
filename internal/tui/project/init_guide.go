@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/erikgeiser/promptkit/textinput"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/mod/semver"
 	"yi/internal/sdk"
 	"yi/internal/tui/box/compiler"
 	cjpackage "yi/pkg/package"
@@ -40,6 +41,12 @@ func InitGuide(c t.InitConfig) t.InitConfig {
 	// 询问版本
 	verInput := textinput.New(":: 请输入包版本：")
 	verInput.InitialValue = c.Version
+	verInput.Validate = func(input string) error {
+		if semver.IsValid(input) {
+			return fmt.Errorf("非法版本号")
+		}
+		return nil
+	}
 	ver, err := verInput.RunPrompt()
 	if err != nil {
 		log.Fatal(err)

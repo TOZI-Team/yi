@@ -3,7 +3,11 @@
   <component name="Go" enabled="true" />
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/test" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/archetypes" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/public" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/resources" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/themes/introduction/exampleSite/public" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

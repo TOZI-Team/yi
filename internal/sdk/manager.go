@@ -98,6 +98,19 @@ func (m *Manager) FindByPath(p string) (int, error) {
 }
 
 func (m *Manager) GetDefault() *t.SDKInfo {
+	//if s := viper.GetString("compiler-path"); s != "" {
+	//	sdk, err := t.NewSDKInfo(s)
+	//	if err == nil {
+	//		return sdk
+	//	}
+	//}
+	if s := os.Getenv("Yi_Compiler_PATH"); s != "" {
+		sdk, err := t.NewSDKInfo(s)
+		if err == nil {
+			return sdk
+		}
+	}
+
 	for _, sdk := range m.Sdks {
 		if m.Default == sdk.Path {
 			return &sdk

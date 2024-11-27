@@ -28,14 +28,15 @@ var BuildCommand = &cobra.Command{
 		}
 
 		log.Debug("Write backend config to disk.")
-		p := t.NewPackageConfig() // 获取包的设置
+		p := t.NewPackageConfigV1() // 获取包的设置
+		p.SetBackend(cjpmPackage.NewCJPMConfigV1())
 		err = p.LoadFromDir(wd)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		p.SetBackend(cjpmPackage.NewCJPMConfig())
+		p.SetBackend(cjpmPackage.NewCJPMConfigV1())
 		p.SyncToBackendConfig()
-		err = p.WriteBackendConfigToDisk()
+		//err = p.WriteToDisk()
 		if err != nil {
 			log.Fatal(err.Error())
 		}
@@ -44,7 +45,7 @@ var BuildCommand = &cobra.Command{
 		err = p.CheckCache()
 		if err != nil {
 			log.Warn(err.Error())
-			sdk, err := sdk.GlobalSDKManger.FindByVersion(p.Base.ComVer)
+			sdk, err := sdk.GlobalSDKManger.FindByVersion(p.ComVer)
 			if err != nil {
 				log.Fatal(err.Error())
 			}

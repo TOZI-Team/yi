@@ -6,10 +6,12 @@ import (
 	"os"
 	"strings"
 	"yi/internal/sdk"
+	cjpmPackage "yi/pkg/backend/cjpm/package"
 	t "yi/pkg/types"
 )
 
 var global bool
+var sdkDefault string
 
 var RunCommand = &cobra.Command{
 	Use:     "run",
@@ -25,10 +27,16 @@ var RunCommand = &cobra.Command{
 		}
 
 		if (!global) && t.IsProjectDir(wd) {
-			pC := t.NewPackageConfig()
+			pC := t.NewPackageConfigV1()
+			pC.SetBackend(cjpmPackage.NewCJPMConfigV1())
 			err = pC.LoadFromDir(wd)
 			if err != nil {
 				log.Fatal(err)
+			}
+
+			if s := pC.FindScript(args[0]); s != "" {
+				log.Debug("Find the script: ", args[0])
+				cmds = strings.Split(s, " ")
 			}
 
 			err = pC.GetCacheSDK().RunCommand(cmds, wd)
@@ -50,4 +58,19 @@ var RunCommand = &cobra.Command{
 
 func init() {
 	RunCommand.Flags().BoolVarP(&global, "global", "g", false, "Use default SDK")
+	RunCommand.Flags().StringVar(&sdkDefault, "compiler-path", "", "Set compiler path")
+
+	//err := viper.BindPFlag("global", RunCommand.Flags().Lookup("global"))
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//err = viper.BindPFlag("compiler-path", RunCommand.Flags().Lookup("global"))
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//err = viper.BindEnv("compiler-path", "Yi_Compiler_PATH")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 }
