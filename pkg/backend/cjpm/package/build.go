@@ -54,7 +54,7 @@ func (opt *CJPMBuildOptions) ToShellArgs() []string {
 }
 
 func (opt *CJPMBuildOptions) GetOutputPath() string {
-	if opt.EnableDebugTarget {
+	if !opt.EnableDebugTarget {
 		return "target/release/bin/main"
 	} else {
 		return "target/debug/bin/main"
