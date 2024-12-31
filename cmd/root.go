@@ -89,6 +89,7 @@ func Execute() {
 }
 
 func init() {
+
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "", "Log level")
 
 	//viper.SetDefault("compiler-path", "")

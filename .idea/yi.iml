@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/docs/public" />
       <excludeFolder url="file://$MODULE_DIR$/docs/resources" />
       <excludeFolder url="file://$MODULE_DIR$/docs/themes/introduction/exampleSite/public" />
+      <excludeFolder url="file://$MODULE_DIR$/docs" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

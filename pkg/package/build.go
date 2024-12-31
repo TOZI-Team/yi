@@ -4,3 +4,22 @@ package cj_package
 //	args := options.MakeBackendShellArgs()
 //	sdk.
 //}
+
+type BuildType uint8
+
+const (
+	STATIC = iota
+	EXEC   = iota
+)
+
+type BuildOptions struct {
+	ProjectPath   string
+	IsRelease     bool
+	RunAfterBuild bool
+	BuildType     BuildType
+}
+
+type BuildResult struct {
+	Success bool
+	Bins    []string
+}
