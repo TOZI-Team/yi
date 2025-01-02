@@ -3,7 +3,6 @@ package fu
 import (
 	"archive/tar"
 	"compress/gzip"
-	"crypto/md5"
 	"fmt"
 	"github.com/hashicorp/go-getter"
 	"github.com/kirsle/configdir"
@@ -33,11 +32,15 @@ func (f Fu) Unpack(dir string) error {
 	return nil
 }
 
+// LoadFromDisk 从磁盘获取包
 func LoadFromDisk(path string) *Fu {
 	return &Fu{path: path}
 }
 
-func LoadFromURL(url string) (*Fu, error) {
+// LoadFromURL 从URL获取包
+//
+// Deprecated: 终止支持
+func LoadFromURL(url string, name string, version string) (*Fu, error) {
 	r, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -49,8 +52,8 @@ func LoadFromURL(url string) (*Fu, error) {
 		}
 	}(r.Body)
 
-	p := configdir.LocalCache("fuxo", "fu", string(md5.New().Sum([]byte(url))))
-	err = getter.Get(url, p)
+	p := configdir.LocalCache("fuxo", "fu", name+"-"+version+".fu")
+	err = getter.GetFile(p, url)
 	if err != nil {
 		return nil, err
 	}

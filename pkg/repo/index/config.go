@@ -93,8 +93,8 @@ func (i Index) FindPackage(name string) (*PackageIndexes, error) {
 	return &is, fmt.Errorf("not support this index type")
 }
 
-func NewIndex(url *string, typ indexType, name string) Index {
-	return Index{url: url, typ: typ, name: name}
+func NewIndex(url *string, typ indexType, name string) *Index {
+	return &Index{url: url, typ: typ, name: name}
 }
 
 type PackageDepend struct {

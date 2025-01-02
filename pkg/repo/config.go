@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"yi/pkg/repo/dl"
+	"yi/pkg/repo/index"
 )
 
 type RepoConfig struct {
@@ -110,6 +112,22 @@ func (c *Config) Load(p string) error {
 		return err
 	}
 	return nil
+}
+
+func (c RepoConfig) GetDL() *dl.Dl {
+	return dl.NewDl(&c.Download)
+}
+
+func (c RepoConfig) GetIndex(name string) *index.Index {
+	return index.NewIndex(&c.Index, index.GitIndex, name)
+}
+
+func (c *Config) GetDefaultDl() *dl.Dl {
+	return c.Repos["fuxo"].GetDL()
+}
+
+func (c *Config) GetDefaultIndex() *index.Index {
+	return c.Repos["fuxo"].GetIndex("fuxo")
 }
 
 var GlobalConfig *Config

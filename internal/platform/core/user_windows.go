@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func isRoot() (bool, error) {
+func isRoot() bool {
 	var sid *windows.SID
 
 	// Although this looks scary, it is directly copied from the
@@ -24,19 +24,19 @@ func isRoot() (bool, error) {
 		&sid)
 	if err != nil {
 		log.Fatalf("SID Error: %s", err)
-		return false, err
+		return false
 	}
 	defer windows.FreeSid(sid)
 
-	// This appears to cast a null pointer so I'm not sure why this
-	// works, but this guy says it does and it Works for Me™:
+	// This appears to cast a null pointer, so I'm not sure why this
+	// works, but this guy says it does, and it Works for Me™:
 	// https://github.com/golang/go/issues/28804#issuecomment-438838144
 	token := windows.Token(0)
 
 	member, err := token.IsMember(sid)
 	if err != nil {
 		log.Error(err.Error())
-		return false, err
+		return false
 	}
-	return member, nil
+	return member
 }
