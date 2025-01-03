@@ -21,3 +21,5 @@ go install
 # 安装预编译软件包
 
 [![](https://github-readme-stats.vercel.app/api/pin/?username=TOZI-Team&repo=yi)](https://github.com/TOZI-Team/yi)
+
+[![gitcode-logo-dark.png](https://s2.loli.net/2025/01/03/RMxsdkLbSzTyKqV.png)](https://gitcode.com/OpenCangjieCommunity/Yi)
