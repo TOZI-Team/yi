@@ -117,6 +117,30 @@ func (p *Package) GetName() string {
 	return p.config.Project.Name
 }
 
+func (p *Package) WriteToDisk(pt string, cache bool) error {
+	d, err := toml.Marshal(*p.config)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(path.Join(pt, "fuxo.toml"), d, 0644)
+	if err != nil {
+		return err
+	}
+
+	if cache {
+		d, err := toml.Marshal(*p.cache)
+		if err != nil {
+			return err
+		}
+		err = os.WriteFile(path.Join(pt, "fuxo.lock"), d, 0644)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func LoadPackageFromDir(dp string, loadCache bool) (*Package, error) {
 	p := new(Package)
 
@@ -140,4 +164,16 @@ type BackendConfigOption struct {
 	OutputType    string
 	ProjectDir    string
 	StaticDepends map[string]string
+}
+
+func InitConfigToProjectConfig(name string, version string, cjcv string) *Package {
+	p := new(Package)
+
+	p.config = new(packageConfig)
+	p.config.Project.Name = name
+	p.config.Project.Version = version
+	p.config.Project.CjcVersion = cjcv
+	p.config.Project.Authors = []string{"example <example@example.com>"}
+
+	return p
 }

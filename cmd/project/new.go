@@ -8,7 +8,6 @@ import (
 	"path"
 	"yi/internal/sdk"
 	"yi/internal/tui/project"
-	cjpmPackage "yi/pkg/backend/cjpm/package"
 	t "yi/pkg/types"
 )
 
@@ -32,12 +31,15 @@ var NewCommand = &cobra.Command{
 		//if err != nil {
 		//	log.Fatal(err)
 		//}
+
 		iC.Path = args[0]
 		iC.Name = path.Base(args[0])
-		iC = project.InitGuide(iC) // 启用TUI引导
-		c := t.NewPackageConfigV1()
-		c.GenerateFromInitConfig(&iC)
-		c.SetBackend(cjpmPackage.NewCJPMConfigV1())
+		//iC = project.InitGuide(iC) // 启用TUI引导
+		//c := t.NewPackageConfigV1()
+		//c.GenerateFromInitConfig(&iC)
+		//c.SetBackend(cjpmPackage.NewCJPMConfigV1())
+		c := project.InitProjectGuide(iC)
+
 		//log.Info(c.Base)
 		s, err := os.Stat(args[0]) // 判断是否存在同名文件
 		if err == nil {
@@ -66,12 +68,12 @@ var NewCommand = &cobra.Command{
 		if err != nil {
 			log.Fatal(err.Error())
 		}
-		if err := os.WriteFile(path.Join(args[0], "./src/demo.cj"), []byte(fmt.Sprintf("package %s\n\n// You can write Cangjie code here.\n", c.Name)), os.ModePerm); err != nil {
+		if err := os.WriteFile(path.Join(args[0], "./src/lib.cj"), []byte(fmt.Sprintf("package %s\n\n// You can write Cangjie code here.\n", c.GetName())), os.ModePerm); err != nil {
 			log.Fatal(err.Error())
 		}
 
 		//log.Debug(c.Base)
-		if err := c.WriteToDisk(); err != nil {
+		if err := c.WriteToDisk(args[0], false); err != nil {
 			log.Fatal(err.Error())
 		}
 		log.Info("创建项目成功")
