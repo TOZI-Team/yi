@@ -6,8 +6,7 @@ import (
 	"os"
 	"path"
 	"yi/internal/sdk"
-	cjpmPackage "yi/pkg/backend/cjpm/package"
-	t "yi/pkg/types"
+	cjpackage "yi/pkg/package"
 )
 
 var InitCmd = &cobra.Command{
@@ -24,7 +23,7 @@ var InitCmd = &cobra.Command{
 			log.Warn("将覆盖当前配置")
 		}
 
-		_, err = os.Stat(path.Join(wd, "./cjpm.toml"))
+		_, err = os.Stat(path.Join(wd, "./fuxo.toml"))
 		if os.IsNotExist(err) {
 
 		} else if err != nil {
@@ -34,18 +33,13 @@ var InitCmd = &cobra.Command{
 				log.Fatal("配置文件已存在")
 			}
 		}
-		iC := t.DefaultInitConfig
-		iC.Path = wd
-		iC.Name = path.Base(wd)
-		iC.ComVer = sdk.GlobalSDKManger.Sdks[0].Ver
-		iC.SDK = &sdk.GlobalSDKManger.Sdks[0]
-		iC.Output = t.EXECUTABLE
 
-		c := t.NewPackageConfigV1()
-		c.SetBackend(cjpmPackage.NewCJPMConfigV1())
-		c.GenerateFromInitConfig(&iC)
+		c := cjpackage.InitConfigToProjectConfig(path.Base(wd), "1.0.0", sdk.GlobalSDKManger.Sdks[0].Ver)
+		//c := t.NewPackageConfigV1()
+		//c.SetBackend(cjpmPackage.NewCJPMConfigV1())
+		//c.GenerateFromInitConfig(&iC)
 
-		if err := c.WriteToDisk(); err != nil {
+		if err := c.WriteToDisk(wd, false); err != nil {
 			log.Fatal(err.Error())
 		}
 		log.Info("项目初始化成功")
