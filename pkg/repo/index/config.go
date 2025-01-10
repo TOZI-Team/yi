@@ -137,8 +137,8 @@ type PackageIndexes = []PackageIndex
 //	@Description: 查找索引表中是否有符合版本要求的项
 //	@param s 对应索引表
 //	@param ver 版本
-func FindVersion(s PackageIndexes, ver string, useYanked bool) (PackageIndex, error) {
-	for _, v := range s {
+func FindVersion(s *PackageIndexes, ver string, useYanked bool) (PackageIndex, error) {
+	for _, v := range *s {
 		if v.Yanked && !useYanked {
 			continue
 		}

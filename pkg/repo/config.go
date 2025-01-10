@@ -130,12 +130,48 @@ func (c *Config) GetDefaultIndex() *index.Index {
 	return c.Repos["fuxo"].GetIndex("fuxo")
 }
 
-var GlobalConfig *Config
+var globalConfig *Config
 
 func init() {
-	GlobalConfig = new(Config)
-	err := GlobalConfig.Load("")
+	globalConfig = new(Config)
+	err := globalConfig.Load("")
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func GlobalConfig() *Config {
+	return globalConfig
+}
+
+type SimplePackageMeta struct {
+	Name, Ver string
+}
+
+// FindAllDep
+//
+// Note: 可能无法有效处理循环依赖问题
+func FindAllDep(name string, version string) ([]SimplePackageMeta, error) {
+	deps := make([]SimplePackageMeta, 0)
+
+	deps = append(deps, SimplePackageMeta{name, version})
+	for i := 0; len(deps) <= 1; i++ {
+		pkg := deps[i]
+
+		is, err := GlobalConfig().GetDefaultIndex().FindPackage(pkg.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		findVer, err := index.FindVersion(is, pkg.Ver, false)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, j := range findVer.Depends {
+			deps = append(deps, SimplePackageMeta{Name: j.Name, Ver: j.ReqVer})
+		}
+	}
+
+	return deps, nil
 }

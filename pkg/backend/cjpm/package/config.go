@@ -26,11 +26,14 @@ type PackageConfig struct {
 	OutputType     t.OutputType `toml:"output-type"`
 }
 
-type CJPMDepend struct {
-	GitURL    string `toml:"git"`
-	GitBranch string `toml:"branch"`
-	Path      string `toml:"path"`
-	Version   string `toml:"version"`
+type CJPMLocalDepend struct {
+	Path    string `toml:"path"`
+	Version string `toml:"version,omitempty"`
+}
+
+type CJPMGitDepend struct {
+	URL string `toml:"url"`
+	Tag string `toml:"tag"`
 }
 
 type CJPMConfigV0 struct {
@@ -167,4 +170,21 @@ func (c *CJPMConfigV1) LoadFromDir(p string) error {
 		return err
 	}
 	return nil
+}
+
+type CJPMConfigV2 struct {
+	Package PackageConfig `toml:"package"`
+	Depend  struct {
+		CJPMLocalDepend []CJPMLocalDepend `toml:"-"`
+		CJPMGitDepend   []CJPMGitDepend   `toml:"-"`
+	} `toml:"depends"`
+	FFi struct {
+		C map[string]struct {
+			Path string `toml:"path"`
+		} `toml:"c"`
+	} `toml:"ffi"`
+}
+
+func newCJPMConfigV2() *CJPMConfigV2 {
+	return new(CJPMConfigV2)
 }

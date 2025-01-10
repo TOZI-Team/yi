@@ -7,7 +7,7 @@ import (
 	"path"
 )
 
-type packageConfig struct {
+type PackageConfig struct {
 	Project struct {
 		Name         string   `toml:"name"`
 		Version      string   `toml:"version"`
@@ -62,10 +62,10 @@ type OnlineCache struct {
 	OnlineCacheLessName
 }
 
-// packageCache
+// PackageCache
 //
 // @Description: 描述包缓存
-type packageCache struct {
+type PackageCache struct {
 	OnlinePackage map[string]OnlineCacheLessName `toml:"-"`
 	GitPackage    map[string]GitCacheLessName    `toml:"-"`
 }
@@ -73,8 +73,8 @@ type packageCache struct {
 // loadCacheFromFile
 //
 //	@Description: 从文件加载缓存
-func loadCacheFromFile(path string) (*packageCache, error) {
-	c := new(packageCache)
+func loadCacheFromFile(path string) (*PackageCache, error) {
+	c := new(PackageCache)
 	_, err := toml.DecodeFile(path, c)
 	if err != nil {
 		return nil, err
@@ -82,21 +82,21 @@ func loadCacheFromFile(path string) (*packageCache, error) {
 	return c, nil
 }
 
-func (c *packageCache) AddCacheGit(g GitCache) {
+func (c *PackageCache) AddCacheGit(g GitCache) {
 	if _, ok := c.OnlinePackage[g.Name]; !ok {
 		delete(c.OnlinePackage, g.Name)
 	}
 	c.GitPackage[g.Name] = g.GitCacheLessName
 }
 
-func (c *packageCache) AddOnlineCache(o OnlineCache) {
+func (c *PackageCache) AddOnlineCache(o OnlineCache) {
 	if _, ok := c.GitPackage[o.Name]; !ok {
 		delete(c.GitPackage, o.Name)
 	}
 	c.OnlinePackage[o.Name] = o.OnlineCacheLessName
 }
 
-func (c *packageCache) RemoveCache(name string) error {
+func (c *PackageCache) RemoveCache(name string) error {
 	if _, ok := c.GitPackage[name]; ok {
 		delete(c.GitPackage, name)
 	} else if _, ok := c.OnlinePackage[name]; ok {
@@ -109,8 +109,16 @@ func (c *packageCache) RemoveCache(name string) error {
 
 // Package 封装符合 fuxo 规范的包
 type Package struct {
-	config *packageConfig
-	cache  *packageCache
+	config *PackageConfig
+	cache  *PackageCache
+}
+
+func (p *Package) Config() *PackageConfig {
+	return p.config
+}
+
+func (p *Package) Cache() *PackageCache {
+	return p.cache
 }
 
 func (p *Package) GetName() string {
@@ -169,7 +177,7 @@ type BackendConfigOption struct {
 func InitConfigToProjectConfig(name string, version string, cjcv string) *Package {
 	p := new(Package)
 
-	p.config = new(packageConfig)
+	p.config = new(PackageConfig)
 	p.config.Project.Name = name
 	p.config.Project.Version = version
 	p.config.Project.CjcVersion = cjcv
