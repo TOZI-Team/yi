@@ -1,7 +1,10 @@
 package fuxo
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/kirsle/configdir"
 	log "github.com/sirupsen/logrus"
@@ -9,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	devlog "yi/log"
 	"yi/pkg/repo/dl"
 	"yi/pkg/repo/index"
 )
@@ -17,6 +21,15 @@ type RepoConfig struct {
 	Download string `toml:"download"`
 	Index    string `toml:"index"`
 	API      string `toml:"api"`
+}
+
+func (c RepoConfig) getName() string {
+	return fmt.Sprintf("%s-%s", c.Index[0:6], hash(c.Download))
+}
+
+func hash(s string) string {
+	sha := sha256.Sum224([]byte(s))
+	return hex.EncodeToString(sha[:])
 }
 
 // GenerateRepoConfig
@@ -123,11 +136,38 @@ func (c RepoConfig) GetIndex(name string) *index.Index {
 }
 
 func (c *Config) GetDefaultDl() *dl.Dl {
-	return c.Repos["fuxo"].GetDL()
+	config := c.Repos["fuxo"]
+	return config.GetDL()
+}
+
+func (c RepoConfig) HavePackageCache(name, ver string) bool {
+	p, err := c.GetFuPath(name, ver)
+	if err != nil {
+		return false
+	}
+
+	if _, err := os.Stat(p); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (c RepoConfig) GetFuPath(name, ver string) (string, error) {
+	wd, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	p := path.Join(wd, ".fuxo", "fu", c.getName(), fmt.Sprintf("%s-%s.fu", name, ver))
+	return p, nil
 }
 
 func (c *Config) GetDefaultIndex() *index.Index {
 	return c.Repos["fuxo"].GetIndex("fuxo")
+}
+
+func (c *Config) GetDefault() RepoConfig {
+	return c.Repos["fuxo"]
 }
 
 var globalConfig *Config
@@ -174,4 +214,44 @@ func FindAllDep(name string, version string) ([]SimplePackageMeta, error) {
 	}
 
 	return deps, nil
+}
+
+// DownloadPackageToCache 下载包至缓存文件夹
+func DownloadPackageToCache(meta SimplePackageMeta) error {
+	// 若已缓存，则直接返回
+	if globalConfig.GetDefault().HavePackageCache(meta.Name, meta.Ver) {
+		return nil
+	}
+
+	d := GlobalConfig().GetDefaultDl().GetDlUrl(meta.Name, meta.Ver)
+	r, err := http.Get(d)
+	if err != nil {
+		return err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			devlog.DevLog.Errorf("close body err: %v", err)
+		}
+	}(r.Body)
+
+	p, err := GlobalConfig().GetDefault().GetFuPath(meta.Name, meta.Ver)
+	if err != nil {
+		return err
+	}
+
+	f, err := os.Create(p)
+	if err != nil {
+		return err
+	}
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			devlog.DevLog.Error(err)
+		}
+	}(f)
+
+	_, err = io.Copy(f, r.Body)
+
+	return nil
 }
