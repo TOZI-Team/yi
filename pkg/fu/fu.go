@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	devlog "yi/log"
 )
 
 type Fu struct {
@@ -143,7 +144,12 @@ func extractTarGzFromURL(url, dst string) error {
 	if err != nil {
 		return fmt.Errorf("failed to download file: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			devlog.DevLog.Errorf("Failed to close response body")
+		}
+	}(resp.Body)
 
 	// 检查 HTTP 状态码
 	if resp.StatusCode != http.StatusOK {
@@ -155,7 +161,12 @@ func extractTarGzFromURL(url, dst string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create gzip reader: %w", err)
 	}
-	defer gzr.Close()
+	defer func(gzr *gzip.Reader) {
+		err := gzr.Close()
+		if err != nil {
+			devlog.DevLog.Errorf("Failed to close gzip reader: %s", err)
+		}
+	}(gzr)
 
 	// 创建 tar 读取器
 	tr := tar.NewReader(gzr)
@@ -190,10 +201,16 @@ func extractTarGzFromURL(url, dst string) error {
 				return fmt.Errorf("failed to create file: %w", err)
 			}
 			if _, err := io.Copy(outFile, tr); err != nil {
-				outFile.Close()
+				err := outFile.Close()
+				if err != nil {
+					return err
+				}
 				return fmt.Errorf("failed to write file content: %w", err)
 			}
-			outFile.Close()
+			err = outFile.Close()
+			if err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("unsupported file type: %v", header.Typeflag)
 		}

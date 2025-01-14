@@ -17,6 +17,20 @@ func (b CJPMProjectBackend) MakeConfig(p *cjpackage.Package, opt *cjpackage.Back
 	c.Package.Version = cjpackage.ToCJPMPackageVersion(p.Config().Project.Version)
 	c.Package.ComVer = p.Config().Project.CjcVersion
 	c.Package.Description = ""
+
+	for k, v := range p.Config().Dependencies.LocalPackage {
+		if !v.IsLegacy {
+			continue
+		}
+		c.Depend.CJPMLocalDepend[k] = CJPMLocalDepend{Path: v.Path}
+	}
+
+	for k, v := range p.Config().Dependencies.GitPackage {
+		if !v.IsLegacy {
+			continue
+		}
+	}
+
 	//TODO 完善
 	return nil
 }

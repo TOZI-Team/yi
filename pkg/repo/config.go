@@ -162,6 +162,18 @@ func (c RepoConfig) GetFuPath(name, ver string) (string, error) {
 	return p, nil
 }
 
+//func (c RepoConfig) GetFuCache(name, ver string) (*fu.Fu, error) {
+//	if !c.HavePackageCache(name, ver) {
+//		return nil, fmt.Errorf("package cache not exist")
+//	}
+//
+//	p, err := c.GetFuPath(name, ver)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return fu.LoadFromDisk(p), nil
+//}
+
 func (c *Config) GetDefaultIndex() *index.Index {
 	return c.Repos["fuxo"].GetIndex("fuxo")
 }

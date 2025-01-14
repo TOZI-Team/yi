@@ -175,8 +175,8 @@ func (c *CJPMConfigV1) LoadFromDir(p string) error {
 type CJPMConfigV2 struct {
 	Package PackageConfig `toml:"package"`
 	Depend  struct {
-		CJPMLocalDepend []CJPMLocalDepend `toml:"-"`
-		CJPMGitDepend   []CJPMGitDepend   `toml:"-"`
+		CJPMLocalDepend map[string]CJPMLocalDepend `toml:"-"`
+		CJPMGitDepend   map[string]CJPMGitDepend   `toml:"-"`
 	} `toml:"depends"`
 	FFi struct {
 		C map[string]struct {

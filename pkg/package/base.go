@@ -5,6 +5,10 @@ import (
 	"github.com/BurntSushi/toml"
 	"os"
 	"path"
+	devlog "yi/log"
+	fuxo "yi/pkg/repo"
+	"yi/pkg/repo/index"
+	"yi/pkg/types"
 )
 
 type PackageConfig struct {
@@ -34,10 +38,11 @@ type PackageConfig struct {
 			IsLegacy bool   `toml:"legacy,omitempty"`
 		} `toml:"-"`
 		GitPackage map[string]struct {
-			URL    string `toml:"git"`
-			Branch string `toml:"branch"`
-			Commit string `toml:"commit"`
-			Tag    string `toml:"tag"`
+			URL      string `toml:"git"`
+			Branch   string `toml:"branch"`
+			Commit   string `toml:"commit"`
+			Tag      string `toml:"tag"`
+			IsLegacy bool   `toml:"legacy,omitempty"`
 		} `toml:"-"`
 	} `toml:"dependencies"`
 }
@@ -113,6 +118,118 @@ type Package struct {
 	cache  *PackageCache
 }
 
+// GetDepCachePath 获取指定依赖的存放路径
+func (p *Package) GetDepCachePath(name string) (string, error) {
+	for k, v := range p.config.Dependencies.OnlinePackage {
+		if v.IsLegacy {
+			continue
+		}
+
+		if k == name {
+			v, ok := p.Cache().OnlinePackage[k]
+			if !ok {
+				return "", fmt.Errorf("must update project first")
+			}
+
+			if !fuxo.GlobalConfig().GetDefault().HavePackageCache(name, v.Version) {
+				return "", fmt.Errorf("dependency %s not found in cache", k)
+			}
+		}
+	}
+
+	for k, v := range p.Config().Dependencies.LocalPackage {
+		if k == name {
+			return v.Path, nil
+		}
+	}
+
+	//TODO 支持git依赖
+
+	return "", fmt.Errorf("not found %s", name)
+}
+
+// MakeCache 生成 Cache
+func (p *Package) MakeCache(overwrite bool) error {
+	if overwrite {
+		p.cache = new(PackageCache)
+	}
+
+	// 处理在线包
+	for k, v := range p.config.Dependencies.OnlinePackage {
+		if v.IsLegacy {
+			continue
+		}
+
+		if _, ok := p.cache.OnlinePackage[k]; !ok {
+			findPS, err := fuxo.GlobalConfig().GetDefaultIndex().FindPackage(k)
+			if err != nil {
+				devlog.DevLog.Warnf("find package %s failed", k)
+				return err
+			}
+
+			version, err := index.FindVersion(findPS, v.Version, false)
+			if err != nil {
+				devlog.DevLog.Warnf("find package %s failed", k)
+				return err
+			}
+
+			p.cache.AddOnlineCache(OnlineCache{Name: k, OnlineCacheLessName: OnlineCacheLessName{Version: version.Version}})
+		}
+
+	}
+
+	// 处理简写包
+	for k, v := range p.config.Dependencies.SimplePackage {
+		if _, ok := p.cache.OnlinePackage[k]; !ok {
+			findPS, err := fuxo.GlobalConfig().GetDefaultIndex().FindPackage(k)
+			if err != nil {
+				return err
+			}
+
+			version, err := index.FindVersion(findPS, v, false)
+			if err != nil {
+				return err
+			}
+
+			p.cache.AddOnlineCache(OnlineCache{Name: k, OnlineCacheLessName: OnlineCacheLessName{Version: version.Version}})
+		}
+	}
+
+	// 处理 git 包
+	for k, _ := range p.config.Dependencies.GitPackage {
+		//TODO 支持git包
+		return fmt.Errorf("not support git package:%s", k)
+	}
+	return nil
+}
+
+func (p *Package) AllOnlineDependencies() ([]fuxo.SimplePackageMeta, error) {
+	m := make([]fuxo.SimplePackageMeta, 0)
+	// 处理在线包
+	for k, v := range p.config.Dependencies.OnlinePackage {
+		if v.IsLegacy {
+			continue
+		}
+
+		if c, ok := p.cache.OnlinePackage[k]; ok {
+			m = append(m, fuxo.SimplePackageMeta{Name: k, Ver: c.Version})
+		} else {
+			return nil, fmt.Errorf("must make cache first")
+		}
+	}
+
+	// 处理简写包
+	for k, _ := range p.config.Dependencies.SimplePackage {
+		if c, ok := p.cache.OnlinePackage[k]; ok {
+			m = append(m, fuxo.SimplePackageMeta{Name: k, Ver: c.Version})
+		} else {
+			return nil, fmt.Errorf("must make cache first")
+		}
+	}
+
+	return m, nil
+}
+
 func (p *Package) Config() *PackageConfig {
 	return p.config
 }
@@ -172,6 +289,7 @@ type BackendConfigOption struct {
 	OutputType    string
 	ProjectDir    string
 	StaticDepends map[string]string
+	UseSDK        *types.SDKInfo
 }
 
 func InitConfigToProjectConfig(name string, version string, cjcv string) *Package {
