@@ -1,7 +1,6 @@
 package types
 
 import "bytes"
-import "yi/pkg/package"
 
 type BackendBuildOptions interface {
 	ToShellArgs() []string
@@ -35,9 +34,3 @@ type BackendProjectConfigV1 interface {
 }
 
 type BackendProjectConfig BackendProjectConfigV1
-
-type ProjectBackendInterface interface {
-	MakeConfig(p *cj_package.Package, opt *cj_package.BackendConfigOption) error
-	MakeBuildArgs(options *cj_package.BuildOptions, opt *cj_package.BackendConfigOption) (*cj_package.BuildResult, error)
-	BackendInfo() string
-}

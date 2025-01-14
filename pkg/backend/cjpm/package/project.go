@@ -29,6 +29,8 @@ func (b CJPMProjectBackend) MakeConfig(p *cjpackage.Package, opt *cjpackage.Back
 		if !v.IsLegacy {
 			continue
 		}
+
+		c.Depend.CJPMGitDepend[k] = CJPMGitDepend{URL: v.URL, Tag: v.Tag}
 	}
 
 	//TODO 完善

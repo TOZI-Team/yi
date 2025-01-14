@@ -13,10 +13,10 @@ const (
 )
 
 type BuildOptions struct {
-	ProjectPath   string
 	IsRelease     bool
 	RunAfterBuild bool
 	BuildType     BuildType
+	ShowOutput    bool
 }
 
 type BuildResult struct {

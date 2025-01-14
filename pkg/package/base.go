@@ -116,6 +116,7 @@ func (c *PackageCache) RemoveCache(name string) error {
 type Package struct {
 	config *PackageConfig
 	cache  *PackageCache
+	path   string
 }
 
 // GetDepCachePath 获取指定依赖的存放路径
@@ -266,10 +267,36 @@ func (p *Package) WriteToDisk(pt string, cache bool) error {
 	return nil
 }
 
+func (p *Package) MakeBackendConfig(opt *BackendConfigOption) error {
+	err := SDKBackendManager.GetBackend().MakeConfig(p, opt)
+	if err != nil {
+		devlog.DevLog.Warnf("make backend config failed: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func (p *Package) Build(opt *BackendConfigOption, buildOpt *BuildOptions) (*BuildResult, error) {
+	result, err := SDKBackendManager.GetBackend().Build(buildOpt, opt)
+	if err != nil {
+		devlog.DevLog.Errorf("build backend failed: %v", err)
+		return nil, err
+	}
+	return result, nil
+}
+
+func (p *Package) GetCompilerVersion() string {
+	return p.Config().Project.CjcVersion
+}
+
+// LoadPackageFromDir 从目录加载项目
 func LoadPackageFromDir(dp string, loadCache bool) (*Package, error) {
 	p := new(Package)
 
 	_, err := toml.DecodeFile(path.Join(dp, "fuxo.toml"), &p.config)
+
+	p.path = dp
 	if err != nil {
 		return nil, err
 	}
@@ -277,7 +304,8 @@ func LoadPackageFromDir(dp string, loadCache bool) (*Package, error) {
 		if _, err := os.Stat(path.Join(dp, "fuxo.lock")); err == nil {
 			p.cache, err = loadCacheFromFile(path.Join(dp, "fuxo.lock"))
 			if err != nil {
-				return nil, err
+				devlog.DevLog.Warnf("load fuxo.lock failed, %v", err)
+				return p, nil
 			}
 		}
 	}
@@ -287,7 +315,6 @@ func LoadPackageFromDir(dp string, loadCache bool) (*Package, error) {
 
 type BackendConfigOption struct {
 	OutputType    string
-	ProjectDir    string
 	StaticDepends map[string]string
 	UseSDK        *types.SDKInfo
 }
@@ -303,3 +330,32 @@ func InitConfigToProjectConfig(name string, version string, cjcv string) *Packag
 
 	return p
 }
+
+func IsFuxoPackage(p string) bool {
+	if _, err := os.Stat(path.Join(p, "fuxo.toml")); err == nil {
+		return true
+	}
+
+	return true
+}
+
+func IsLegacyPackage(p string) bool {
+	if _, err := os.Stat(path.Join(p, "cjpm.toml")); err == nil {
+		return true
+	}
+	return false
+}
+
+type ProjectBackendInterface interface {
+	MakeConfig(p *Package, opt *BackendConfigOption) error
+	Build(options *BuildOptions, opt *BackendConfigOption) (*BuildResult, error)
+	BackendInfo() string
+	Clean() error
+}
+
+type backendManager interface {
+	AddBackend(backend ProjectBackendInterface)
+	GetBackend() ProjectBackendInterface
+}
+
+var SDKBackendManager backendManager
