@@ -79,6 +79,7 @@ func Execute() {
 	rootCmd.AddCommand(project.RunCommand)
 	rootCmd.AddCommand(project.InitCmd)
 	rootCmd.AddCommand(project.RawRunCmd)
+	rootCmd.AddCommand(project.FetchCmd)
 
 	rootCmd.AddCommand(sdkCmd.Command)
 

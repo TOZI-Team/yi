@@ -17,6 +17,8 @@ type BuildOptions struct {
 	RunAfterBuild bool
 	BuildType     BuildType
 	ShowOutput    bool
+	SDKVersion    string
+	Path          string
 }
 
 type BuildResult struct {

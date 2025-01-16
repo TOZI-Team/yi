@@ -277,8 +277,8 @@ func (p *Package) MakeBackendConfig(opt *BackendConfigOption) error {
 	return nil
 }
 
-func (p *Package) Build(opt *BackendConfigOption, buildOpt *BuildOptions) (*BuildResult, error) {
-	result, err := SDKBackendManager.GetBackend().Build(buildOpt, opt)
+func (p *Package) Build(buildOpt *BuildOptions) (*BuildResult, error) {
+	result, err := SDKBackendManager.GetBackend().Build(buildOpt)
 	if err != nil {
 		devlog.DevLog.Errorf("build backend failed: %v", err)
 		return nil, err
@@ -348,7 +348,7 @@ func IsLegacyPackage(p string) bool {
 
 type ProjectBackendInterface interface {
 	MakeConfig(p *Package, opt *BackendConfigOption) error
-	Build(options *BuildOptions, opt *BackendConfigOption) (*BuildResult, error)
+	Build(options *BuildOptions) (*BuildResult, error)
 	BackendInfo() string
 	Clean() error
 }

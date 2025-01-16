@@ -6,10 +6,12 @@ import (
 	"os"
 	"yi/internal/sdk"
 	cjpmPackage "yi/pkg/backend/cjpm/package"
+	cjpackage "yi/pkg/package"
 	t "yi/pkg/types"
 )
 
 var buildOptions *t.BuildOptions
+var legacy bool
 
 //var cjpmBuildOptions *cjpmPackage.CJPMBuildOptions
 
@@ -27,51 +29,30 @@ var BuildCommand = &cobra.Command{
 			log.Fatal("SDK manager is empty")
 		}
 
-		log.Debug("Write backend config to disk.")
-		p := t.NewPackageConfigV1() // 获取包的设置
-		p.SetBackend(cjpmPackage.NewCJPMConfigV1())
-		err = p.LoadFromDir(wd)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		p.SetBackend(cjpmPackage.NewCJPMConfigV1())
-		p.SyncToBackendConfig()
-		//err = p.WriteToDisk()
-		if err != nil {
-			log.Fatal(err.Error())
-		}
+		var opt = cjpackage.BuildOptions{IsRelease: buildOptions.IsRelease, RunAfterBuild: false, BuildType: 0, ShowOutput: false}
 
-		log.Debug("检查缓存")
-		err = p.CheckCache()
-		if err != nil {
-			log.Warn(err.Error())
-			sdk, err := sdk.GlobalSDKManger.FindByVersion(p.ComVer)
+		if legacy || (!cjpackage.IsFuxoPackage(wd) && cjpackage.IsLegacyPackage(wd)) {
+			result, err := cjpmPackage.CJPMProjectBackend{}.Build(&opt)
+			if err != nil {
+				log.Error(err.Error())
+			}
+
+			if !result.Success {
+				log.Exit(1)
+			}
+		} else {
+			p, err := cjpackage.LoadPackageFromDir(wd, true)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
-			err = p.ResetCache(sdk.Path)
-			if err != nil {
-				log.Fatal(err.Error())
-			}
-		}
 
-		uSdk := p.GetCacheSDK()
-		log.Infof("Use SDK: %s", uSdk.Path)
-		workDir, err := os.Getwd()
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		output, err := uSdk.BuildProject(workDir, *buildOptions)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		log.Infof("Successfully build project successfully, output: %s", output)
-
-		if buildOptions.RunAfterBuild {
-			err = uSdk.RunCommand([]string{output}, wd)
+			build, err := p.Build(&opt)
 			if err != nil {
-				log.Error(err)
 				return
+			}
+
+			if !build.Success {
+				log.Exit(1)
 			}
 		}
 	},
@@ -85,4 +66,5 @@ func init() {
 
 	BuildCommand.Flags().BoolVarP(&buildOptions.IsRelease, "release", "r", false, "Build a release")
 	BuildCommand.Flags().BoolVar(&buildOptions.RunAfterBuild, "run", false, "Run after build")
+	BuildCommand.Flags().BoolVarP(&legacy, "legacy", "", false, "Use legacy build")
 }

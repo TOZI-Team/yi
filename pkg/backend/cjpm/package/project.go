@@ -1,6 +1,12 @@
 package cjpmPackage
 
-import cjpackage "yi/pkg/package"
+import (
+	"github.com/BurntSushi/toml"
+	"os"
+	"yi/internal/sdk"
+	cjpackage "yi/pkg/package"
+	t "yi/pkg/types"
+)
 
 const version = "0.1.0"
 
@@ -33,11 +39,40 @@ func (b CJPMProjectBackend) MakeConfig(p *cjpackage.Package, opt *cjpackage.Back
 		c.Depend.CJPMGitDepend[k] = CJPMGitDepend{URL: v.URL, Tag: v.Tag}
 	}
 
+	marshal, err := toml.Marshal(*c)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile("cjpm.toml", marshal, 0644)
+	if err != nil {
+		return err
+	}
 	//TODO 完善
 	return nil
 }
 
-func (b CJPMProjectBackend) MakeBuildArgs(options *cjpackage.BuildOptions, opt *cjpackage.BackendConfigOption) (*cjpackage.BuildResult, error) {
+func (b CJPMProjectBackend) Build(options *cjpackage.BuildOptions) (*cjpackage.BuildResult, error) {
+	ot := t.PackageConfigV0{}
+	err := ot.LoadFromDir(options.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	cv := ot.Base.ComVer
+	byVersion, err := sdk.GlobalSDKManger.FindByVersion(cv)
+	if err != nil {
+		return nil, err
+	}
+
+	err = byVersion.RunCommand([]string{"cjpm", "build"}, options.Path)
+	if err != nil {
+		return nil, err
+	}
 	//TODO 待完善
-	return nil, nil
+	return &cjpackage.BuildResult{Success: true}, nil
+}
+
+func (b CJPMProjectBackend) Clean() error {
+	return nil
 }
