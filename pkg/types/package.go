@@ -213,24 +213,7 @@ func NewPackageConfigV0() *PackageConfigV0 {
 }
 
 type PackageConfigV1 struct {
-	ComVer         string     `toml:"cjc-version"`
-	CompilerOption string     `toml:"compiler-option"`
-	Description    string     `toml:"description"`
-	Name           string     `toml:"name"`
-	Version        string     `toml:"version"`
-	ScrPath        string     `toml:"src-dir"`
-	TargetPath     string     `toml:"target-dir"`
-	OutputType     OutputType `toml:"output-type"`
-	Backend        string     `toml:"backend"`
-	path           string
-	Authors        []string
-	cache          struct {
-		XMLName     xml.Name `xml:"Cache"`
-		Version     string   `xml:"version,attr"`
-		CompilerSet SDKInfo  `xml:"cacheCompiler"`
-	}
-	Scripts map[string]string `toml:"scripts"`
-	backend BackendProjectConfigV1
+	ComVer string `toml:"cjc-version"`
 }
 
 type PackageConfig PackageConfigV1
@@ -241,13 +224,13 @@ func (c *PackageConfigV1) LoadFromDir(p string) error {
 	if err != nil {
 		return err
 	}
-	c.path = absPath
-
-	err = c.backend.LoadFromDir(c.path)
-	if err != nil {
-		return err
-	}
-	c.backend.ToPackageConfig(c)
+	//c.path = absPath
+	//
+	//err = c.backend.LoadFromDir(c.path)
+	//if err != nil {
+	//	return err
+	//}
+	//c.backend.ToPackageConfig(c)
 
 	f, err := os.ReadFile(path.Join(absPath, "cjpm.toml"))
 	if err != nil {
@@ -260,126 +243,126 @@ func (c *PackageConfigV1) LoadFromDir(p string) error {
 		return err
 	}
 
-	c.Scripts = t.Scripts
+	//c.Scripts = t.Scripts
 
 	// 加载 project.lock
-	xmlFile, err := os.ReadFile(path.Join(p, CacheFileName))
-	if err != nil {
-		return err
-	}
-	err = xml.Unmarshal(xmlFile, &c.cache)
-	if err != nil {
-		return err
-	}
+	//xmlFile, err := os.ReadFile(path.Join(p, CacheFileName))
+	//if err != nil {
+	//	return err
+	//}
+	//err = xml.Unmarshal(xmlFile, &c.cache)
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 
-func (c *PackageConfigV1) LoadFromBackend() error {
-	err := c.backend.LoadFromDir(c.path)
-	return err
-}
+//func (c *PackageConfigV1) LoadFromBackend() error {
+//	err := c.backend.LoadFromDir(c.path)
+//	return err
+//}
 
-func (c *PackageConfigV1) GenerateFromInitConfig(config *InitConfig) {
-	c.path = config.Path
-	//c.backend = backend
-	c.Name = config.Name
-	c.ComVer = config.SDK.Ver
-	c.Description = config.Description
-	c.Authors = []string{config.Authors}
-	c.Version = config.Version
-	c.cache.CompilerSet = *config.SDK
-	c.OutputType = config.Output
-	//c.SetBackend(backend)
-	//log.Info(c.Base)
-}
+//func (c *PackageConfigV1) GenerateFromInitConfig(config *InitConfig) {
+//	c.path = config.Path
+//	//c.backend = backend
+//	c.Name = config.Name
+//	c.ComVer = config.SDK.Ver
+//	c.Description = config.Description
+//	c.Authors = []string{config.Authors}
+//	c.Version = config.Version
+//	c.cache.CompilerSet = *config.SDK
+//	c.OutputType = config.Output
+//	//c.SetBackend(backend)
+//	//log.Info(c.Base)
+//}
 
 // SetBackend 方法用于设置 PackageConfigV0 结构体中的 backend 字段
-func (c *PackageConfigV1) SetBackend(config BackendProjectConfigV1) {
-	// 将传入的 config 参数赋值给 c.backend 字段
-	c.backend = config
-}
+//func (c *PackageConfigV1) SetBackend(config BackendProjectConfigV1) {
+//	// 将传入的 config 参数赋值给 c.backend 字段
+//	c.backend = config
+//}
 
 // WriteToDisk 写入配置
-func (c *PackageConfigV1) WriteToDisk() error {
-	c.SyncToBackendConfig()
+//func (c *PackageConfigV1) WriteToDisk() error {
+//	c.SyncToBackendConfig()
+//
+//	buf, err := c.backend.ToBytes()
+//	if err != nil {
+//		return err
+//	}
+//
+//	err = toml.NewEncoder(buf).Encode(map[string]map[string]string{"scripts": c.Scripts})
+//	if err != nil {
+//		return err
+//	}
+//
+//	err = os.WriteFile(path.Join(c.path, "./cjpm.toml"), buf.Bytes(), 0755)
+//	if err != nil {
+//		return err
+//	}
+//
+//	// 将 c.cache 序列化为 XML 格式，并使用空格和制表符进行缩进
+//	data, err := xml.MarshalIndent(c.cache, " ", "   ")
+//	// 如果序列化过程中发生错误，记录错误并返回
+//	if err != nil {
+//		log.Warn(err.Error())
+//		return err
+//	}
+//	// 将序列化后的数据写入到 project.lock 文件中
+//	err = os.WriteFile(path.Join(c.path, CacheFileName), data, 0644)
+//	// 如果写入过程中发生错误，记录错误并返回
+//	if err != nil {
+//		log.Warn(err.Error())
+//		return err
+//	}
+//
+//	return nil
+//}
 
-	buf, err := c.backend.ToBytes()
-	if err != nil {
-		return err
-	}
-
-	err = toml.NewEncoder(buf).Encode(map[string]map[string]string{"scripts": c.Scripts})
-	if err != nil {
-		return err
-	}
-
-	err = os.WriteFile(path.Join(c.path, "./cjpm.toml"), buf.Bytes(), 0755)
-	if err != nil {
-		return err
-	}
-
-	// 将 c.cache 序列化为 XML 格式，并使用空格和制表符进行缩进
-	data, err := xml.MarshalIndent(c.cache, " ", "   ")
-	// 如果序列化过程中发生错误，记录错误并返回
-	if err != nil {
-		log.Warn(err.Error())
-		return err
-	}
-	// 将序列化后的数据写入到 project.lock 文件中
-	err = os.WriteFile(path.Join(c.path, CacheFileName), data, 0644)
-	// 如果写入过程中发生错误，记录错误并返回
-	if err != nil {
-		log.Warn(err.Error())
-		return err
-	}
-
-	return nil
-}
-
-func (c *PackageConfigV1) SyncToBackendConfig() {
-	c.backend.GenerateFromProjectConfig(*c)
-}
+//func (c *PackageConfigV1) SyncToBackendConfig() {
+//	c.backend.GenerateFromProjectConfig(*c)
+//}
 
 // CheckCache 检查项目缓存是否有效
 // 当缓存中的编译器无效时
-func (c *PackageConfigV1) CheckCache() error {
-	if !c.cache.CompilerSet.CheckIsHave() {
-		return yError.NewNotFoundSDKErr(c.cache.CompilerSet.Path)
-	}
-	return nil
-}
+//func (c *PackageConfigV1) CheckCache() error {
+//	if !c.cache.CompilerSet.CheckIsHave() {
+//		return yError.NewNotFoundSDKErr(c.cache.CompilerSet.Path)
+//	}
+//	return nil
+//}
 
-func (c *PackageConfigV1) ResetCache(p string) error {
-	sdk, err := NewSDKInfo(p)
-	if err != nil {
-		return err
-	}
-	if sdk.Ver != c.ComVer {
-		log.Warn("编译器版本与项目设置不匹配。")
-	}
-	c.cache.CompilerSet = *sdk
-	return nil
-}
+//func (c *PackageConfigV1) ResetCache(p string) error {
+//	sdk, err := NewSDKInfo(p)
+//	if err != nil {
+//		return err
+//	}
+//	if sdk.Ver != c.ComVer {
+//		log.Warn("编译器版本与项目设置不匹配。")
+//	}
+//	c.cache.CompilerSet = *sdk
+//	return nil
+//}
 
-func (c *PackageConfigV1) GetCacheSDK() *SDKInfo {
-	return &c.cache.CompilerSet
-}
+//func (c *PackageConfigV1) GetCacheSDK() *SDKInfo {
+//	return &c.cache.CompilerSet
+//}
 
 func NewPackageConfigV1() *PackageConfigV1 {
 	c := new(PackageConfigV1)
-	c.OutputType = EXECUTABLE
-	c.Scripts = map[string]string{}
+	//c.OutputType = EXECUTABLE
+	//c.Scripts = map[string]string{}
 	return c
 }
 
-func (c *PackageConfigV1) FindScript(key string) string {
-	for k, v := range c.Scripts {
-		if k == key {
-			return v
-		}
-	}
-	return ""
-}
+//func (c *PackageConfigV1) FindScript(key string) string {
+//	for k, v := range c.Scripts {
+//		if k == key {
+//			return v
+//		}
+//	}
+//	return ""
+//}
 
 type OutputType = string
 

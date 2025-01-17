@@ -8,7 +8,6 @@ import (
 	devlog "yi/log"
 	fuxo "yi/pkg/repo"
 	"yi/pkg/repo/index"
-	"yi/pkg/types"
 )
 
 type PackageConfig struct {
@@ -292,6 +291,7 @@ func (p *Package) GetCompilerVersion() string {
 
 // LoadPackageFromDir 从目录加载项目
 func LoadPackageFromDir(dp string, loadCache bool) (*Package, error) {
+
 	p := new(Package)
 
 	_, err := toml.DecodeFile(path.Join(dp, "fuxo.toml"), &p.config)
@@ -314,9 +314,7 @@ func LoadPackageFromDir(dp string, loadCache bool) (*Package, error) {
 }
 
 type BackendConfigOption struct {
-	OutputType    string
-	StaticDepends map[string]string
-	UseSDK        *types.SDKInfo
+	OutputType string
 }
 
 func InitConfigToProjectConfig(name string, version string, cjcv string) *Package {

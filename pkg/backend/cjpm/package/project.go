@@ -53,13 +53,13 @@ func (b CJPMProjectBackend) MakeConfig(p *cjpackage.Package, opt *cjpackage.Back
 }
 
 func (b CJPMProjectBackend) Build(options *cjpackage.BuildOptions) (*cjpackage.BuildResult, error) {
-	ot := t.PackageConfigV0{}
+	ot := t.PackageConfigV1{}
 	err := ot.LoadFromDir(options.Path)
 	if err != nil {
 		return nil, err
 	}
 
-	cv := ot.Base.ComVer
+	cv := ot.ComVer
 	byVersion, err := sdk.GlobalSDKManger.FindByVersion(cv)
 	if err != nil {
 		return nil, err

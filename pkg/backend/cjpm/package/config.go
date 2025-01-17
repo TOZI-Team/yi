@@ -113,20 +113,21 @@ func NewCJPMConfigV1() *CJPMConfigV1 {
 	c.Package = PackageConfig{OutputType: t.EXECUTABLE}
 	return c
 }
-func (c *CJPMConfigV1) GenerateFromPackageConfig(config t.PackageConfigV1) {
-	c.Package.Name = config.Name
-	c.Package.Version = config.Version
-	c.Package.ComVer = config.ComVer
-	c.Package.Description = config.Description
-	c.Package.ScrPath = config.ScrPath
-	c.Package.TargetPath = config.TargetPath
-	c.Package.OutputType = config.OutputType
-	c.Package.CompilerOption = config.CompilerOption
-}
 
-func (c *CJPMConfigV1) GenerateFromProjectConfig(config t.PackageConfigV1) {
-	c.GenerateFromPackageConfig(config)
-}
+//func (c *CJPMConfigV1) GenerateFromPackageConfig(config t.PackageConfigV1) {
+//	c.Package.Name = config.Name
+//	c.Package.Version = config.Version
+//	c.Package.ComVer = config.ComVer
+//	c.Package.Description = config.Description
+//	c.Package.ScrPath = config.ScrPath
+//	c.Package.TargetPath = config.TargetPath
+//	c.Package.OutputType = config.OutputType
+//	c.Package.CompilerOption = config.CompilerOption
+//}
+
+//func (c *CJPMConfigV1) GenerateFromProjectConfig(config t.PackageConfigV1) {
+//	c.GenerateFromPackageConfig(config)
+//}
 
 func (c *CJPMConfigV1) ToBytes() (*bytes.Buffer, error) {
 	buf := bytes.NewBuffer([]byte{})
@@ -141,20 +142,20 @@ func (c *CJPMConfigV1) ToBytes() (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-func (c *CJPMConfigV1) ToPackageConfig(p *t.PackageConfigV1) {
-	if p == nil {
-		p = t.NewPackageConfigV1()
-	}
-
-	p.Name = c.Package.Name
-	p.Version = c.Package.Version
-	p.ComVer = c.Package.ComVer
-	p.Description = c.Package.Description
-	p.ScrPath = c.Package.ScrPath
-	p.TargetPath = c.Package.TargetPath
-	p.OutputType = c.Package.OutputType
-	p.CompilerOption = c.Package.CompilerOption
-}
+//func (c *CJPMConfigV1) ToPackageConfig(p *t.PackageConfigV1) {
+//	if p == nil {
+//		p = t.NewPackageConfigV1()
+//	}
+//
+//	p.Name = c.Package.Name
+//	p.Version = c.Package.Version
+//	p.ComVer = c.Package.ComVer
+//	p.Description = c.Package.Description
+//	p.ScrPath = c.Package.ScrPath
+//	p.TargetPath = c.Package.TargetPath
+//	p.OutputType = c.Package.OutputType
+//	p.CompilerOption = c.Package.CompilerOption
+//}
 
 func (c *CJPMConfigV1) LoadFromDir(p string) error {
 	s, err := os.Stat(p)

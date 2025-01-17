@@ -22,7 +22,7 @@ func (m WaitingModel) Init() tea.Cmd {
 }
 
 func (m WaitingModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if len(m.statueC) == 1 {
+	if len(m.statueC) != 0 {
 		tStatue := <-m.statueC
 		if tStatue.Message != "" {
 			m.statue.Message = tStatue.Message

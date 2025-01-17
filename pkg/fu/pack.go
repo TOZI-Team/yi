@@ -9,7 +9,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	cjpackage "yi/pkg/package"
 )
 
 import "github.com/gobwas/glob"
@@ -119,14 +118,14 @@ func createTarGz(outputPath string, sourceDir string, selector *FileSelector) er
 // output 应当为文件夹
 func NewFuFromDir(dir string, output string, selector *FileSelector) (*Fu, error) {
 	f := new(Fu)
-	p, err := cjpackage.LoadPackageFromDir(dir, false)
-	if err != nil {
-		return nil, err
-	}
-	f.p = p
+	//p, err := cjpackage.LoadPackageFromDir(dir, false)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//f.
 
 	// 创建压缩包
-	err = createTarGz(path.Join(output, fmt.Sprintf("%s.fu", f.p.GetName())), dir, selector)
+	err := createTarGz(path.Join(output, fmt.Sprintf("%s.fu", path.Base(dir))), dir, selector)
 	if err != nil {
 		return nil, err
 	}

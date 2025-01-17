@@ -23,7 +23,7 @@ type RepoConfig struct {
 	API      string `toml:"api"`
 }
 
-func (c RepoConfig) getName() string {
+func (c RepoConfig) Name() string {
 	return fmt.Sprintf("%s-%s", c.Index[0:6], hash(c.Download))
 }
 
@@ -135,6 +135,10 @@ func (c RepoConfig) GetDL() *dl.Dl {
 	return dl.NewDl(&c.Download)
 }
 
+//func (c RepoConfig) GetCache() *cache.Config {
+//	return cache.NewConfig(c.Name())
+//}
+
 func (c RepoConfig) GetIndex(name string) *index.Index {
 	return index.NewIndex(&c.Index, index.GitIndex, name)
 }
@@ -162,7 +166,7 @@ func (c RepoConfig) GetFuPath(name, ver string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	p := path.Join(wd, ".fuxo", "fu", c.getName(), fmt.Sprintf("%s-%s.fu", name, ver))
+	p := path.Join(wd, ".fuxo", "fu", c.Name(), fmt.Sprintf("%s-%s.fu", name, ver))
 	return p, nil
 }
 
@@ -201,7 +205,20 @@ func GlobalConfig() *Config {
 }
 
 type SimplePackageMeta struct {
-	Name, Ver string
+	Name, Ver, Repo string
+}
+
+func (s SimplePackageMeta) Download() error {
+	if s.Repo == "" {
+		err := DownloadPackageToCache(s)
+		if err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("not suport custom repo now")
+	}
+
+	return nil
 }
 
 // FindAllDep
@@ -210,7 +227,7 @@ type SimplePackageMeta struct {
 func FindAllDep(name string, version string) ([]SimplePackageMeta, error) {
 	deps := make([]SimplePackageMeta, 0)
 
-	deps = append(deps, SimplePackageMeta{name, version})
+	deps = append(deps, SimplePackageMeta{name, version, ""})
 	for i := 0; len(deps) <= 1; i++ {
 		pkg := deps[i]
 

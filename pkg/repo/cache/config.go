@@ -5,6 +5,8 @@ import (
 	"os"
 	"path"
 	"yi/pkg/fu"
+	cjpackage "yi/pkg/package"
+	t "yi/pkg/types"
 )
 
 type Config struct {
@@ -53,6 +55,25 @@ func (c *Config) MakeCache(name string, version string) error {
 	}
 	err = f.Unpack(c.GetCache(name, version))
 	return err
+}
+
+func (c *Config) GenerateCache(name string, version string) error {
+	p := c.GetCache(name, version)
+	if p == "" {
+		return fmt.Errorf("no cache found for %s", name)
+	}
+
+	dir, err := cjpackage.LoadPackageFromDir(p, false)
+	if err != nil {
+		return err
+	}
+
+	err = dir.MakeBackendConfig(&cjpackage.BackendConfigOption{OutputType: t.STATIC})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *Config) GetCache(name string, version string) string {

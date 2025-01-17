@@ -30,11 +30,11 @@ func NewWaitingBox(f func(chan t.WaitingMessage)) *BaseWaitingBox {
 }
 
 type JobsModel struct {
-	jobs []t.Job
+	Jobs []t.Job
 }
 
-func (m JobsModel) Run(c chan t.WaitingMessage) error {
-	for _, job := range m.jobs {
+func (m *JobsModel) Run(c chan t.WaitingMessage) error {
+	for _, job := range m.Jobs {
 		c <- t.WaitingMessage{
 			Message: job.Name,
 			Statue:  t.Waiting,
@@ -52,4 +52,8 @@ func (m JobsModel) Run(c chan t.WaitingMessage) error {
 		Statue: t.Success,
 	}
 	return nil
+}
+
+func (m *JobsModel) AddJob(job t.Job) {
+	m.Jobs = append(m.Jobs, job)
 }
