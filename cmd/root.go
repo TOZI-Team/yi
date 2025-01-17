@@ -16,7 +16,7 @@ var logLevel string
 var rootCmd = &cobra.Command{
 	Use:     "yi",
 	Short:   "Cangjie package manager",
-	Version: "0.2.0-weekly.2",
+	Version: "0.2.0",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if logLevel == "" {
 			return
@@ -78,7 +78,6 @@ func Execute() {
 	rootCmd.AddCommand(project.BuildCommand)
 	rootCmd.AddCommand(project.RunCommand)
 	rootCmd.AddCommand(project.InitCmd)
-	rootCmd.AddCommand(project.RawRunCmd)
 	rootCmd.AddCommand(project.FetchCmd)
 
 	rootCmd.AddCommand(sdkCmd.Command)
