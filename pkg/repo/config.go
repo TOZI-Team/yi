@@ -110,8 +110,12 @@ func (c *Config) Load(p string) error {
 		p = path.Join(configdir.LocalConfig("fuxo"), "config.toml")
 		if _, err := os.Stat(p); os.IsNotExist(err) {
 			p = path.Join(configdir.SystemConfig("fuxo")[0], "config.toml")
-			if _, err := os.Stat(p); os.IsNotExist(err) {
-				return err
+			if _, err := os.Stat(p); err != nil {
+				if os.IsNotExist(err) {
+					return nil
+				} else {
+					return err
+				}
 			}
 		}
 	}
