@@ -139,8 +139,8 @@ func (c RepoConfig) GetDL() *dl.Dl {
 //	return cache.NewConfig(c.Name())
 //}
 
-func (c RepoConfig) GetIndex(name string) *index.Index {
-	return index.NewIndex(&c.Index, index.GitIndex, name)
+func (c RepoConfig) GetIndex() *index.Index {
+	return index.NewIndex(&c.Index, index.GitIndex, c.Name())
 }
 
 func (c *Config) GetDefaultDl() *dl.Dl {
@@ -183,7 +183,7 @@ func (c RepoConfig) GetFuPath(name, ver string) (string, error) {
 //}
 
 func (c *Config) GetDefaultIndex() *index.Index {
-	return c.Repos["fuxo"].GetIndex("fuxo")
+	return c.Repos["fuxo"].GetIndex()
 }
 
 func (c *Config) GetDefault() RepoConfig {

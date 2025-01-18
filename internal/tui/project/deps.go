@@ -35,7 +35,8 @@ func (p *PackageDownloadTUI) Run() error {
 		jobs = append(jobs, *t.NewJob(fmt.Sprintf("Download %s", meta.Name), meta.Download))
 	}
 	m := tBox.JobsModel{Jobs: jobs}
-	err := m.Run(make(chan t.WaitingMessage, 5))
+
+	err := tBox.NewWaitingBox(m.Run).Run()
 	if err != nil {
 		return err
 	}
@@ -64,7 +65,7 @@ func (p *DepMakeTUI) Run() error {
 		}))
 	}
 	m := tBox.JobsModel{Jobs: jobs}
-	err := m.Run(make(chan t.WaitingMessage, 5))
+	err := tBox.NewWaitingBox(m.Run).Run()
 	if err != nil {
 		return err
 	}

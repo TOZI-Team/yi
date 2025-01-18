@@ -12,7 +12,7 @@ type BaseWaitingBox struct {
 }
 
 func (box BaseWaitingBox) Run() error {
-	c := make(chan t.WaitingMessage, 1)
+	c := make(chan t.WaitingMessage, 4)
 	box.m = modules.NewWaitingModel("Working", c)
 	go box.f(c)
 
@@ -33,7 +33,7 @@ type JobsModel struct {
 	Jobs []t.Job
 }
 
-func (m *JobsModel) Run(c chan t.WaitingMessage) error {
+func (m *JobsModel) Run(c chan t.WaitingMessage) {
 	for _, job := range m.Jobs {
 		c <- t.WaitingMessage{
 			Message: job.Name,
@@ -46,12 +46,12 @@ func (m *JobsModel) Run(c chan t.WaitingMessage) error {
 				Statue:  t.Err,
 			}
 		}
-		return err
+		return
 	}
 	c <- t.WaitingMessage{
 		Statue: t.Success,
 	}
-	return nil
+	return
 }
 
 func (m *JobsModel) AddJob(job t.Job) {

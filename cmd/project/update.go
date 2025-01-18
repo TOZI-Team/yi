@@ -5,8 +5,10 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"yi/internal/sdk"
+	"yi/internal/tui/project"
 	cjpmPackage "yi/pkg/backend/cjpm/package"
 	cjpackage "yi/pkg/package"
+	fuxo "yi/pkg/repo"
 )
 
 var UpdateCmd = &cobra.Command{
@@ -35,6 +37,11 @@ var UpdateCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
+		}
+
+		err = project.NewRepoUpdateJobFromRepo(fuxo.GlobalConfig().GetDefault()).Run()
+		if err != nil {
+			log.Fatal(err)
 		}
 
 		p, err := cjpackage.LoadPackageFromDir(wd, false)
